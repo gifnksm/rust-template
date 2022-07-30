@@ -3,9 +3,7 @@
 [![maintenance status: {{maintenance-status}}](https://img.shields.io/badge/maintenance-{{maintenance-status | replace: "-", "--"}}-yellowgreen.svg)](https://doc.rust-lang.org/cargo/reference/manifest.html#the-badges-section)
 [![license: MIT OR APACHE-2.0](https://img.shields.io/crates/l/{{project-name}}.svg)](#license)
 [![crates.io](https://img.shields.io/crates/v/{{project-name}}.svg)](https://crates.io/crates/{{project-name}})
-{% if crate_type == "lib" -%}
 [![docs.rs](https://docs.rs/{{project-name}}/badge.svg)](https://docs.rs/{{project-name}}/)
-{% endif -%}
 [![rust {{rust-version}}+ badge](https://img.shields.io/badge/rust-{{rust-version}}+-93450a.svg)](https://doc.rust-lang.org/cargo/reference/manifest.html#the-rust-version-field)
 [![Rust CI](https://github.com/{{gh-username}}/{{project-name}}/actions/workflows/ci.yml/badge.svg)](https://github.com/{{gh-username}}/{{project-name}}/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/{{gh-username}}/{{project-name}}/graph/badge.svg)](https://codecov.io/gh/{{gh-username}}/{{project-name}})
