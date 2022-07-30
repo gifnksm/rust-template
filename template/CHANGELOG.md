@@ -9,5 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+* First release
+
 <!-- next-url -->
 [Unreleased]: https://github.com/{{gh-username}}/{{project-name}}/commits/HEAD
