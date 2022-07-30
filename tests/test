@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -eux
+
+test_dir="$(dirname "${BASH_SOURCE[0]}")"
+cd "${test_dir}"
+
+for crate_type in bin lib; do
+  rm -rf out.${crate_type}
+  mkdir out.${crate_type}
+
+  (
+    cd out.${crate_type}
+    cargo generate \
+      --init \
+      --path ../../template \
+      --${crate_type} \
+      --name test-project \
+      --template-values-file ../template_values.toml
+    cargo fmt --check
+    cargo build
+    cargo check
+    cargo clippy
+    cargo test
+  )
+done

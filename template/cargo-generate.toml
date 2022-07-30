@@ -1,0 +1,26 @@
+[conditional.'crate_type == "bin"']
+ignore = [ "tests", "README.tpl" ]
+
+[conditional.'crate_type == "lib"']
+ignore = [ ".github/workflows/cd.yml" ]
+
+[placeholders.project-description]
+type = "string"
+prompt = "Project description"
+
+[placeholders.gh-username]
+type = "string"
+prompt = "GitHub username or organization name"
+regex = "^[A-Za-z0-9][A-Za-z0-9-]{0,38}$"
+
+[placeholders.maintenance-status]
+type = "string"
+prompt = "Maintenance status"
+choices = ["actively-developed", "passively-maintained", "as-is", "looking-for-maintainer", "deprecated", "none"]
+default = "none"
+
+[placeholders.rust-version]
+type = "string"
+prompt = "Minimum supported Rust version (MSRV)"
+regex = "^\\d+\\.\\d+\\.\\d+$"
+default = "1.56.1"

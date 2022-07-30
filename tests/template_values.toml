@@ -1,0 +1,5 @@
+[values]
+project-description = "super great awesome project"
+gh-username = "gifnksm"
+maintenance-status = "passively-maintained"
+rust-version = "1.56.1"

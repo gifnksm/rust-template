@@ -1,0 +1,44 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [stable]
+        job:
+          - crate_type: "bin"
+          - crate_type: "lib"
+    env:
+      PROJECT_NAME: rust-template-generated
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run cargo generate
+        uses: cargo-generate/cargo-generate-action@v0.14.0
+        with:
+          name: ${{ env.PROJECT_NAME }}
+          subfolder: template
+          template_values_file: tests/template_values.toml
+          other: "--${{ matrix.job.crate_type }}"
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - name: Cargo check
+        # we need to move the generated project to a temp folder, away from the template project
+        # otherwise `cargo` runs would fail
+        # see https://github.com/rust-lang/cargo/issues/9922
+        run: |
+          mv $PROJECT_NAME ${{ runner.temp }}/
+          cd ${{ runner.temp }}/$PROJECT_NAME
+          cargo fmt --check
+          cargo build
+          cargo check
+          cargo clippy
+          cargo test
