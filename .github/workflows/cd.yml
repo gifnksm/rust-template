@@ -12,9 +12,7 @@ jobs:
         rust: [stable]
         job:
           - crate_type: "bin"
-            ssh_key: ${{ secrets.GH_EXAMPLE_DEPLOY_BIN_SECRET }}
           - crate_type: "lib"
-            ssh_key: ${{ secrets.GH_EXAMPLE_DEPLOY_LIB_SECRET }}
     env:
       PROJECT_NAME: rust-template-generated-${{ matrix.job.crate_type }}
     steps:
@@ -27,12 +25,22 @@ jobs:
           template_values_file: tests/template_values.toml
           other: "--${{ matrix.job.crate_type }}"
 
-      - name: Checkout old example
+      - name: Set env vars for bin
+        run: |
+          echo "SSH_KEY=${{ secrets.GH_EXAMPLE_DEPLOY_BIN_SECRET }}" >> $GITHUB_ENV
+        if: ${{ matrix.job.crate_type == 'bin' }}
+
+      - name: Set env vars for lib
+        run: |
+          echo "SSH_KEY=${{ secrets.GH_EXAMPLE_DEPLOY_LIB_SECRET }}" >> $GITHUB_ENV
+        if: ${{ matrix.job.crate_type == 'lib' }}
+
+      - name: Checkout example repo
         uses: actions/checkout@v3
         with:
           repository: gifnksm/${{ env.PROJECT_NAME }}
           path: example_repo
-          ssh-key: ${{ matrix.job.ssh_key }}
+          ssh-key: ${{ env.SSH_KEY }}
 
       - name: update example
         run: |
