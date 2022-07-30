@@ -24,7 +24,10 @@ jobs:
           subfolder: template
           template_values_file: tests/template_values.toml
           other: "--${{ matrix.job.crate_type }}"
-
+      - name: Run cargo generate-lockfile
+        run: |
+          cd $PROJECT_NAME
+          cargo generate-lockfile
       - name: Set env vars for bin
         run: |
           echo 'SSH_KEY<<EOF' >> $GITHUB_ENV
