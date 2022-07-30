@@ -17,10 +17,6 @@ for crate_type in bin lib; do
       --${crate_type} \
       --name test-project \
       --template-values-file ../template_values.toml
-    cargo fmt --check
-    cargo build
-    cargo check
-    cargo clippy
-    cargo test
+    ../scripts/run_cargo_tests
   )
 done

@@ -33,8 +33,4 @@ jobs:
       - name: Cargo check
         run: |
           cd $PROJECT_NAME
-          cargo fmt --check
-          cargo build
-          cargo check
-          cargo clippy
-          cargo test
+          ../tests/scripts/run_cargo_tests
