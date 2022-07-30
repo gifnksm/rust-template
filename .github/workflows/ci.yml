@@ -15,7 +15,7 @@ jobs:
           - crate_type: "bin"
           - crate_type: "lib"
     env:
-      PROJECT_NAME: rust-template-generated-${{ matrix.job.create_type }}
+      PROJECT_NAME: rust-template-generated-${{ matrix.job.crate_type }}
     steps:
       - uses: actions/checkout@v3
       - name: Run cargo generate
