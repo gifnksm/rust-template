@@ -4,11 +4,3 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-  - package-ecosystem: "github-actions"
-    directory: "/template"
-    schedule:
-      interval: "daily"
-  - package-ecosystem: "cargo"
-    directory: "/template"
-    schedule:
-      interval: "daily"
