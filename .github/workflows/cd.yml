@@ -1,0 +1,53 @@
+name: Synchronize the example with the template
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  synchronize_example:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [stable]
+        job:
+          - crate_type: "bin"
+            ssh_key: ${{ secrets.GH_EXAMPLE_DEPLOY_BIN_SECRET }}
+          - crate_type: "lib"
+            ssh_key: ${{ secrets.GH_EXAMPLE_DEPLOY_LIB_SECRET }}
+    env:
+      PROJECT_NAME: rust-template-generated-${{ matrix.job.crate_type }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run cargo generate
+        uses: cargo-generate/cargo-generate-action@v0.16.0
+        with:
+          name: ${{ env.PROJECT_NAME }}
+          subfolder: template
+          template_values_file: tests/template_values.toml
+          other: "--${{ matrix.job.crate_type }}"
+
+      - name: Checkout old example
+        uses: actions/checkout@v3
+        with:
+          repository: gifnksm/${{ env.PROJECT_NAME }}
+          path: example_repo
+          ssh-key: ${{ matrix.job.ssh_key }}
+
+      - name: update example
+        run: |
+          find example_repo -mindepth 1 -maxdepth 1 -not -name .git -exec rm -rf {} \;
+          find ${{ env.PROJECT_NAME }} -mindepth 1 -maxdepth 1 -not -name .git -exec cp -r {} example_repo \;
+
+      - name: commit example
+        run: |
+          cd example_repo
+          git config user.name github-actions
+          git config user.email github-actions@example.com
+          git add .
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "automatic update" -m "from $GITHUB_REPOSITORY@$GITHUB_SHA"
+            git push
+          else
+            echo "nothing to commit";
+          fi
