@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - '[v]?[0-9]+.[0-9]+.[0-9]+'
+    branches:
+      - main
+  pull_request:
 
 jobs:
   publish:
@@ -52,6 +55,18 @@ jobs:
           profile: minimal
           override: true
 
+      - name: Sets env vars for push
+        shell: bash
+        run: |
+          echo "RELEASE_REF_NAME={{ '${{ github.ref_name }}' }}" >> $GITHUB_ENV
+        if: {{ "${{ github.event_name == 'push' }}" }}
+
+      - name: Sets env vars for pull request
+        shell: bash
+        run: |
+          echo "RELEASE_REF_NAME=pr{{ '${{ github.event.pull_request.number }}' }}" >> $GITHUB_ENV
+        if: {{ "${{ github.event_name == 'pull_request' }}" }}
+
       - name: cargo build
         uses: actions-rs/cargo@v1
         with:
@@ -81,7 +96,7 @@ jobs:
           fi
           "$GCC_PREFIX"strip $BINARY_NAME
           ########## create tar.gz ##########
-          RELEASE_NAME={{ project-name }}-${GITHUB_REF/refs\/tags\//}-{{ '${{ matrix.job.os-name }}' }}-{{ '${{ matrix.job.architecture }}' }}
+          RELEASE_NAME={{ project-name }}-${RELEASE_REF_NAME}-{{ '${{ matrix.job.os-name }}' }}-{{ '${{ matrix.job.architecture }}' }}
           tar czvf $RELEASE_NAME.tar.gz $BINARY_NAME
           ########## create sha256 ##########
           if [[ {{ '${{ runner.os }}' }} == 'Windows' ]]; then
@@ -98,3 +113,4 @@ jobs:
             target/{{ '${{ matrix.job.target }}' }}/release/{{ project-name }}-*.sha256
         env:
           GITHUB_TOKEN: {{ '${{ secrets.GITHUB_TOKEN }}' }}
+        if: {{ "${{ startsWith(github.ref, 'refs/tags/') }}" }}
