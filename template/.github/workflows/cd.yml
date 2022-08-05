@@ -4,44 +4,37 @@ on:
   push:
     tags:
       - '[v]?[0-9]+.[0-9]+.[0-9]+'
+    branches:
+      - main
+  pull_request:
 
 jobs:
   publish:
-    name: Publishing for {{ '${{ matrix.job.os }}' }}
+    name: Publishing for {{ '${{ matrix.job.target }}' }}
     runs-on: {{ '${{ matrix.job.os }}' }}
     strategy:
       matrix:
         rust: [stable]
         job:
           - os: macos-latest
-            os-name: macos
             target: x86_64-apple-darwin
-            architecture: x86_64
-            binary-postfix: ""
+            binary-suffix: ""
             use-cross: false
           - os: ubuntu-latest
-            os-name: linux
             target: x86_64-unknown-linux-gnu
-            architecture: x86_64
-            binary-postfix: ""
+            binary-suffix: ""
             use-cross: false
           - os: windows-latest
-            os-name: windows
             target: x86_64-pc-windows-msvc
-            architecture: x86_64
-            binary-postfix: ".exe"
+            binary-suffix: ".exe"
             use-cross: false
           - os: ubuntu-latest
-            os-name: linux
             target: aarch64-unknown-linux-gnu
-            architecture: arm64
-            binary-postfix: ""
+            binary-suffix: ""
             use-cross: true
           - os: ubuntu-latest
-            os-name: linux
             target: i686-unknown-linux-gnu
-            architecture: i686
-            binary-postfix: ""
+            binary-suffix: ""
             use-cross: true
 
     steps:
@@ -52,6 +45,18 @@ jobs:
           profile: minimal
           override: true
 
+      - name: Sets env vars for push
+        shell: bash
+        run: |
+          echo "RELEASE_REF_NAME={{ '${{ github.ref_name }}' }}" >> $GITHUB_ENV
+        if: {{ "${{ github.event_name == 'push' }}" }}
+
+      - name: Sets env vars for pull request
+        shell: bash
+        run: |
+          echo "RELEASE_REF_NAME=pr{{ '${{ github.event.pull_request.number }}' }}" >> $GITHUB_ENV
+        if: {{ "${{ github.event_name == 'pull_request' }}" }}
+
       - name: cargo build
         uses: actions-rs/cargo@v1
         with:
@@ -60,28 +65,13 @@ jobs:
           toolchain: {{ '${{ matrix.rust }}' }}
           args: --release --target {{ '${{ matrix.job.target }}' }}
 
-      - name: install strip command
-        shell: bash
-        run: |
-          if [[ {{ '${{ matrix.job.target }}' }} == aarch64-unknown-linux-gnu ]]; then
-              sudo apt update
-              sudo apt-get install -y binutils-aarch64-linux-gnu
-          fi
-
       - name: Packaging final binary
         shell: bash
         run: |
           cd target/{{ '${{ matrix.job.target }}' }}/release
-          ####### reduce binary size by removing debug symbols #######
-          BINARY_NAME={{ project-name }}{{ '${{ matrix.job.binary-postfix }}' }}
-          if [[ {{ '${{ matrix.job.target }}' }} == aarch64-unknown-linux-gnu ]]; then
-            GCC_PREFIX="aarch64-linux-gnu-"
-          else
-            GCC_PREFIX=""
-          fi
-          "$GCC_PREFIX"strip $BINARY_NAME
           ########## create tar.gz ##########
-          RELEASE_NAME={{ project-name }}-${GITHUB_REF/refs\/tags\//}-{{ '${{ matrix.job.os-name }}' }}-{{ '${{ matrix.job.architecture }}' }}
+          RELEASE_NAME={{ project-name }}-${RELEASE_REF_NAME}-{{ '${{ matrix.job.target }}' }}
+          BINARY_NAME={{ project-name }}{{ '${{ matrix.job.binary-suffix }}' }}
           tar czvf $RELEASE_NAME.tar.gz $BINARY_NAME
           ########## create sha256 ##########
           if [[ {{ '${{ runner.os }}' }} == 'Windows' ]]; then
@@ -89,6 +79,13 @@ jobs:
           else
             shasum -a 256 $RELEASE_NAME.tar.gz > $RELEASE_NAME.sha256
           fi
+
+      - name: Upload binaries as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: |
+            target/{{ '${{ matrix.job.target }}' }}/release/souko-*.tar.gz
+            target/{{ '${{ matrix.job.target }}' }}/release/souko-*.sha256
 
       - name: Releasing assets
         uses: softprops/action-gh-release@v1
@@ -98,3 +95,4 @@ jobs:
             target/{{ '${{ matrix.job.target }}' }}/release/{{ project-name }}-*.sha256
         env:
           GITHUB_TOKEN: {{ '${{ secrets.GITHUB_TOKEN }}' }}
+        if: {{ "${{ startsWith(github.ref, 'refs/tags/') }}" }}

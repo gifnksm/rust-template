@@ -22,3 +22,7 @@ maintenance = { status = "{{maintenance-status}}" }
 version-sync = "0.9.4"
 cargo-readme = "3.2.0"
 {%- endif -%}
+{% if crate_type == "bin" -%}
+[profile.release]
+strip = true
+{%- endif %}
