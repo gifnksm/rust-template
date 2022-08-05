@@ -105,6 +105,13 @@ jobs:
             shasum -a 256 $RELEASE_NAME.tar.gz > $RELEASE_NAME.sha256
           fi
 
+      - name: Upload binaries as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: |
+            target/{{ '${{ matrix.job.target }}' }}/release/souko-*.tar.gz
+            target/{{ '${{ matrix.job.target }}' }}/release/souko-*.sha256
+
       - name: Releasing assets
         uses: softprops/action-gh-release@v1
         with:
