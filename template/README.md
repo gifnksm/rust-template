@@ -25,11 +25,29 @@ Add this to your `Cargo.toml`:
 
 ## Installation
 
-### Cargo
+There are multiple ways to install {{project-name}}.
+Choose any one of the methods below that best suits your needs.
 
-* Install the rust toolchain to have cargo installed by following
-  [this](https://www.rust-lang.org/tools/install) guide.
-* run `cargo install {{project-name}}`
+### Pre-built binaries
+
+Executable binaries are available for download on the [GitHub Release page].
+
+[GitHub Release page]: https://github.com/{{gh-username}}/{{project-name}}/releases/
+
+### Build from source using Rust
+
+To build {{project-name}} executable from the source, you must have the Rust toolchain installed.
+To install the rust toolchain, follow [this guide](https://www.rust-lang.org/tools/install).
+
+Once you have installed Rust, the following command can be used to build and install {{project-name}}:
+
+```console
+# Install released version
+$ cargo install {{project-name}}
+
+# Install latest version
+$ cargo install --git https://github.com/{{gh-username}}/{{project-name}}.git {{ project-name }}
+```
 
 {%- endif %}
 
