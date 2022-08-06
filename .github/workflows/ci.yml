@@ -30,6 +30,10 @@ jobs:
           toolchain: stable
           profile: minimal
           override: true
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ env.PROJECT_NAME }}
+          workspaces: "${{ env.PROJECT_NAME }} -> target"
       - name: Cargo check
         run: |
           cd $PROJECT_NAME
