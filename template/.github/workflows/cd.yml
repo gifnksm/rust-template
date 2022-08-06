@@ -10,7 +10,7 @@ on:
 
 jobs:
   publish:
-    name: Publishing for {{ '${{ matrix.job.target }}' }}
+    name: Publishing for {{ "${{ matrix.job.target }}" }}
     runs-on: {{ "${{ matrix.job.os }}" }}
     strategy:
       matrix:
@@ -44,6 +44,9 @@ jobs:
           toolchain: {{ "${{ matrix.rust }}" }}
           profile: minimal
           override: true
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: {{ "${{ matrix.job.target }}" }}
 
       - name: Sets env vars for push
         shell: bash
