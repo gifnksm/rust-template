@@ -17,17 +17,9 @@ jobs:
       matrix:
         rust: [stable]
         job:
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            binary-suffix: ""
-            use-cross: false
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             binary-suffix: ""
-            use-cross: false
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            binary-suffix: ".exe"
             use-cross: false
           - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
@@ -37,6 +29,14 @@ jobs:
             target: i686-unknown-linux-gnu
             binary-suffix: ""
             use-cross: true
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            binary-suffix: ""
+            use-cross: false
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            binary-suffix: ".exe"
+            use-cross: false
 
     steps:
       - uses: actions/checkout@v3
