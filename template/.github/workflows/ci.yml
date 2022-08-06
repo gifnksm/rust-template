@@ -14,6 +14,7 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         rust:
           - stable
@@ -25,6 +26,7 @@ jobs:
           toolchain: {{ "${{ matrix.rust }}" }}
           profile: minimal
           override: true
+      - uses: Swatinem/rust-cache@v2
       - name: cargo test
         run: cargo test --workspace --all-targets --all-features
 
@@ -32,10 +34,11 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         rust:
           - stable
-          - { { rust-version } }
+          - {{ rust-version }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
@@ -43,6 +46,7 @@ jobs:
           toolchain: {{ "${{ matrix.rust }}" }}
           profile: minimal
           override: true
+      - uses: Swatinem/rust-cache@v2
       - name: cargo build
         run: cargo build --workspace --all-targets --all-features
 
@@ -57,6 +61,7 @@ jobs:
           profile: minimal
           components: rustfmt
           override: true
+      - uses: Swatinem/rust-cache@v2
       - name: cargo fmt
         run: cargo fmt --all --check
 
@@ -65,6 +70,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          components: clippy
+          override: true
+      - uses: Swatinem/rust-cache@v2
       - name: Check workflow permissions
         id: check_permissions
         uses: scherermichael-oss/action-has-permission@1.0.6
@@ -80,12 +92,6 @@ jobs:
           name: Clippy (stable) Results
           token: {{ "${{ secrets.GITHUB_TOKEN }}" }}
           args: --all-features --all-targets -- -D warnings
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          components: clippy
-          override: true
       - name: Run clippy manually without annotations
         if: {{ "${{ !steps.check_permissions.outputs.has-permission }}" }}
         run: cargo clippy --all-features --all-targets -- -D warnings
@@ -100,6 +106,7 @@ jobs:
           toolchain: stable
           profile: minimal
           override: true
+      - uses: Swatinem/rust-cache@v2
       - name: cargo doc
         uses: actions-rs/cargo@v1
         env:
@@ -118,6 +125,7 @@ jobs:
           toolchain: stable
           profile: minimal
           override: true
+      - uses: Swatinem/rust-cache@v2
       - uses: actions-rs/cargo@v1
         with:
           command: publish
@@ -134,6 +142,7 @@ jobs:
           profile: minimal
           components: llvm-tools-preview
           override: true
+      - uses: Swatinem/rust-cache@v2
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@cargo-llvm-cov
       - name: Generate code coverage
