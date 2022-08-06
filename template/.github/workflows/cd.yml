@@ -19,24 +19,19 @@ jobs:
         job:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            binary-suffix: ""
-            use-cross: false
+            xtask-args: ""
           - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
-            binary-suffix: ""
-            use-cross: true
+            xtask-args: --use-cross
           - os: ubuntu-latest
             target: i686-unknown-linux-gnu
-            binary-suffix: ""
-            use-cross: true
+            xtask-args: --use-cross
           - os: macos-latest
             target: x86_64-apple-darwin
-            binary-suffix: ""
-            use-cross: false
+            xtask-args: ""
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            binary-suffix: ".exe"
-            use-cross: false
+            xtask-args: ""
 
     steps:
       - uses: actions/checkout@v3
@@ -48,6 +43,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           key: {{ "${{ matrix.job.target }}" }}
+      - name: Install cross
+        uses: taiki-e/install-action@cross
 
       - name: Sets env vars for push
         shell: bash
@@ -61,42 +58,22 @@ jobs:
           echo "RELEASE_REF_NAME=pr{{ '${{ github.event.pull_request.number }}' }}" >> $GITHUB_ENV
         if: {{ "${{ github.event_name == 'pull_request' }}" }}
 
-      - name: cargo build
+      - name: cargo xtask dist
         uses: actions-rs/cargo@v1
         with:
-          command: build
-          use-cross: {{ "${{ matrix.job.use-cross }}" }}
+          command: xtask
           toolchain: {{ "${{ matrix.rust }}" }}
-          args: --release --target {{ '${{ matrix.job.target }}' }}
-
-      - name: Packaging final binary
-        shell: bash
-        run: |
-          cd target/{{ '${{ matrix.job.target }}' }}/release
-          ########## create tar.gz ##########
-          RELEASE_NAME={{ project-name }}-${RELEASE_REF_NAME}-{{ '${{ matrix.job.target }}' }}
-          BINARY_NAME={{ project-name }}{{ '${{ matrix.job.binary-suffix }}' }}
-          tar czvf $RELEASE_NAME.tar.gz $BINARY_NAME
-          ########## create sha256 ##########
-          if [[ {{ '${{ runner.os }}' }} == 'Windows' ]]; then
-            certutil -hashfile $RELEASE_NAME.tar.gz sha256 | grep -E [A-Fa-f0-9]{64} > $RELEASE_NAME.sha256
-          else
-            shasum -a 256 $RELEASE_NAME.tar.gz > $RELEASE_NAME.sha256
-          fi
+          args: dist --tag {{ "${{ env.RELEASE_REF_NAME }}" }} --target {{ "${{ matrix.job.target }}" }} {{ "${{ matrix.job.xtask-args }}" }}
 
       - name: Upload binaries as artifacts
         uses: actions/upload-artifact@v3
         with:
-          path: |
-            target/{{ '${{ matrix.job.target }}' }}/release/souko-*.tar.gz
-            target/{{ '${{ matrix.job.target }}' }}/release/souko-*.sha256
+          path: target/dist/*
 
       - name: Releasing assets
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            target/{{ '${{ matrix.job.target }}' }}/release/{{ project-name }}-*.tar.gz
-            target/{{ '${{ matrix.job.target }}' }}/release/{{ project-name }}-*.sha256
+          files: target/dist/*
         env:
           GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
         if: {{ "${{ startsWith(github.ref, 'refs/tags/') }}" }}

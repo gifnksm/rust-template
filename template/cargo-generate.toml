@@ -2,7 +2,7 @@
 ignore = [ "tests", "README.tpl" ]
 
 [conditional.'crate_type == "lib"']
-ignore = [ ".github/workflows/cd.yml" ]
+ignore = [ ".github/workflows/cd.yml", "src/main.rs", "xtask" ]
 
 [placeholders.project-description]
 type = "string"
