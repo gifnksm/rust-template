@@ -1,3 +1,7 @@
+{% if crate_type == "bin" -%}
+[workspace]
+members = ["xtask"]
+{% endif %}
 [package]
 name = "{{project-name}}"
 version = "0.0.0"
