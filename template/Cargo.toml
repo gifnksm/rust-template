@@ -12,17 +12,20 @@ categories = []
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[badges]
-maintenance = { status = "{{maintenance-status}}" }
-
 [dependencies]
 
-{% if crate_type == "lib" -%}
 [dev-dependencies]
+{% if crate_type == "lib" -%}
 version-sync = "0.9.4"
 cargo-readme = "3.2.0"
-{%- endif -%}
-{% if crate_type == "bin" -%}
+{% endif %}
+[build-dependencies]
+
+[profile.dev]
+
 [profile.release]
+{% if crate_type == "bin" -%}
 strip = true
-{%- endif %}
+{% endif %}
+[badges]
+maintenance = { status = "{{maintenance-status}}" }
