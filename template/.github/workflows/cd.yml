@@ -13,6 +13,7 @@ jobs:
     name: Publishing for {{ "${{ matrix.job.target }}" }}
     runs-on: {{ "${{ matrix.job.os }}" }}
     strategy:
+      fail-fast: false
       matrix:
         rust: [stable]
         job:
