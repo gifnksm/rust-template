@@ -1,35 +1,34 @@
 use std::{
-    env::{self, consts::EXE_EXTENSION},
+    env,
     fs::{self, File},
-    path::PathBuf,
-    process::Command,
+    io::BufReader,
+    path::Path,
+    process::{Command, Stdio},
 };
 
+use cargo_metadata::{camino::Utf8PathBuf, Message, Metadata, MetadataCommand, Package};
 use clap::Parser;
 use color_eyre::eyre::{ensure, Result};
 use flate2::{write::GzEncoder, Compression};
 
-const PACKAGE_NAME: &str = "{{ project-name }}";
-const EXECUTABLE_NAMES: &[&str] = &["{{ project-name }}"];
-
 #[derive(Debug, Parser)]
 #[clap(author, version, about)]
 enum Cmd {
-    /// Package the {{ package-name }} and produce a set of distributable artifacts
+    /// Package the executables of root package and produce a set of distributable artifacts
     Dist(DistArgs),
 }
 
 #[derive(Debug, Parser)]
 struct DistArgs {
-    /// Use cross tool to build
-    #[clap(long)]
-    use_cross: bool,
     /// Target triple for the build
     #[clap(long)]
     target: Option<String>,
-    /// Release name for the build
+    /// Use cross tool to build
     #[clap(long)]
-    tag: Option<String>,
+    use_cross: bool,
+    /// Use cross if target is different from default target
+    #[clap(long)]
+    use_cross_if_needed: bool,
 }
 
 fn main() -> Result<()> {
@@ -53,90 +52,93 @@ fn main() -> Result<()> {
 
 fn dist(args: &DistArgs) -> Result<()> {
     let DistArgs {
-        use_cross,
         target,
-        tag,
+        use_cross,
+        use_cross_if_needed,
     } = args;
 
-    let use_cross = *use_cross;
     let target = target.as_deref();
-    let tag = tag.as_deref();
+    let use_cross = *use_cross
+        || (*use_cross_if_needed && target.map(|t| t != env!("DEFAULT_TARGET")).unwrap_or(false));
 
-    let mut artifacts_path = vec![];
-    for exe_name in EXECUTABLE_NAMES {
-        let path = build(exe_name, use_cross, target)?;
-        artifacts_path.push(path);
-    }
+    let metadata = MetadataCommand::new().exec()?;
+    let root_package = &metadata.root_package().unwrap();
 
-    create_archive(tag, target, &artifacts_path)?;
+    let artifacts_path = build(&metadata, root_package, use_cross, target)?;
+    create_archive(&metadata, root_package, target, &artifacts_path)?;
 
     Ok(())
 }
 
-fn build(exe_name: &str, use_cross: bool, target: Option<&str>) -> Result<PathBuf> {
-    let mut target_dir = PathBuf::from("target");
-    ensure!(
-        target_dir.is_dir(),
-        "output directory does not exist: {}",
-        target_dir.display()
-    );
-    if let Some(target) = target {
-        target_dir.push(target);
-    }
-    ensure!(
-        target_dir.is_dir(),
-        "output directory does not exist: {}",
-        target_dir.display()
-    );
-
-    tracing::debug!(%use_cross, ?target, target_dir = %target_dir.display());
-
-    let cmd = if use_cross { "cross" } else { "cargo" };
-    let args = ["build", "--release", "--package", exe_name];
+fn build(
+    metadata: &Metadata,
+    package: &Package,
+    use_cross: bool,
+    target: Option<&str>,
+) -> Result<Vec<Utf8PathBuf>> {
+    let cmd_name = if use_cross { "cross" } else { "cargo" };
+    let mut args = vec![
+        "build",
+        "--release",
+        "--package",
+        package.name.as_str(),
+        "--message-format=json-render-diagnostics",
+    ];
 
     if let Some(target) = target {
-        tracing::info!("Running {} {} --target {}", cmd, args.join(" "), target);
-        Command::new(cmd)
-            .args(&args)
-            .arg("--target")
-            .arg(target)
-            .status()?;
-    } else {
-        tracing::info!("Running {} {}", cmd, args.join(" "));
-        Command::new(cmd).args(&args).status()?;
+        args.extend_from_slice(&["--target", target]);
     }
 
-    let mut output = target_dir.join("release").join(exe_name);
-    output.set_extension(EXE_EXTENSION);
-    ensure!(
-        output.is_file(),
-        "output file does not exist: {}",
-        output.display()
-    );
-    Ok(output)
+    let mut cmd = Command::new(cmd_name);
+    cmd.args(&args);
+
+    tracing::info!("Running {} {}", cmd_name, args.join(" "));
+    let mut cmd = cmd.stdout(Stdio::piped()).spawn()?;
+
+    let mut artifacts = vec![];
+    let reader = BufReader::new(cmd.stdout.take().unwrap());
+    for message in Message::parse_stream(reader) {
+        if let Message::CompilerArtifact(msg) = message? {
+            if let Some(exe) = &msg.executable {
+                let exe = if use_cross {
+                    metadata
+                        .target_directory
+                        .join(exe.strip_prefix("/target").unwrap())
+                } else {
+                    exe.clone()
+                };
+                tracing::info!("Found artifact: {}", exe);
+                ensure!(exe.is_file(), "Artifact is not a file");
+                artifacts.push(exe);
+            }
+        }
+    }
+
+    Ok(artifacts)
 }
 
-fn create_archive(tag: Option<&str>, target: Option<&str>, artifacts: &[PathBuf]) -> Result<()> {
-    let mut name_parts = vec![PACKAGE_NAME];
-    if let Some(tag) = tag {
-        name_parts.push(tag);
-    }
-    if let Some(target) = target {
-        name_parts.push(target);
-    }
-
-    let archive_name = format!("{}.tar.gz", name_parts.join("-"));
-    let dist_dir = PathBuf::from("target/dist");
+fn create_archive(
+    metadata: &Metadata,
+    package: &Package,
+    target: Option<&str>,
+    artifacts: &[impl AsRef<Path>],
+) -> Result<()> {
+    let dist_dir = metadata.target_directory.join("dist");
     fs::create_dir_all(&dist_dir)?;
+
+    let target = target.unwrap_or(env!("DEFAULT_TARGET"));
+    let archive_name = format!("{}-v{}-{target}.tar.gz", package.name, package.version);
 
     let archive_path = dist_dir.join(archive_name);
 
-    tracing::info!("Creating archive: {}", archive_path.display());
+    tracing::info!("Creating archive: {archive_path}");
+
     let archive = File::create(&archive_path)?;
     let enc = GzEncoder::new(archive, Compression::default());
     let mut tar = tar::Builder::new(enc);
 
     for src_path in artifacts {
+        let src_path = src_path.as_ref();
         let artifact_name = src_path.file_name().unwrap().to_str().unwrap();
         tracing::info!(
             "Adding artifact: {} as {}",
