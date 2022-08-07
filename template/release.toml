@@ -12,3 +12,4 @@ pre-release-replacements = [
   {%- endif %}
 ]
 pre-release-hook = ["cargo", "test"]
+dev-version = true

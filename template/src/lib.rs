@@ -7,10 +7,10 @@
 //!
 //! ```toml
 //! [dependencies]
-//! {{ project-name }} = "0.0.0"
+//! {{ project-name }} = "0.1.0-alpha.0"
 //! ```
 
-#![doc(html_root_url = "https://docs.rs/{{project-name}}/0.0.0")]
+#![doc(html_root_url = "https://docs.rs/{{project-name}}/0.1.0-alpha.0")]
 
 {% endif -%}
 
