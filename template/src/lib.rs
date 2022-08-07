@@ -1,4 +1,3 @@
-{%- if crate_type == "lib" -%}
 //! {{ project-description }}
 //!
 //! # Usage
@@ -11,8 +10,6 @@
 //! ```
 
 #![doc(html_root_url = "https://docs.rs/{{project-name}}/0.0.0")]
-
-{% endif -%}
 
 #[cfg(test)]
 mod tests {
