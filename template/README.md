@@ -17,7 +17,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-{{ project-name }} = "0.0.0"
+{{ project-name }} = "0.1.0-alpha.0"
 ```
 
 {%- else -%}
