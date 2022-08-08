@@ -4,11 +4,22 @@ on:
   push:
     tags:
       - "[v]?[0-9]+.[0-9]+.[0-9]+"
+{%- if crate_type == "bin" %}
     branches:
       - main
   pull_request:
+{%- endif %}
 
 jobs:
+{%- if crate_type == "lib" %}
+      - name: Releasing assets
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
+        if: {{ "${{ startsWith(github.ref, 'refs/tags/') }}" }}
+{%- else -%}
   publish:
     name: Publishing for {{ "${{ matrix.job.target }}" }}
     runs-on: {{ "${{ matrix.job.os }}" }}
@@ -57,6 +68,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: target/dist/*
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
         if: {{ "${{ startsWith(github.ref, 'refs/tags/') }}" }}
+{%- endif %}

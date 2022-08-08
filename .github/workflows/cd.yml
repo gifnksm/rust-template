@@ -51,14 +51,16 @@ jobs:
           ssh-key: ${{ env.SSH_KEY }}
 
       - name: update example
-        run: ./tests/scripts/update_repo example_repo ${{ env.PROJECT_NAME }}
+        run: |
+          ./tests/scripts/update_repo example_repo ${{ env.PROJECT_NAME }}
+          git -C example_repo add -N .
+
 
       - name: test example
         run: (cd example_repo && ../tests/scripts/run_cargo_tests)
 
       - name: show example diff
         run: git -C example_repo diff || true
-
 
       - name: commit example
         run: |
