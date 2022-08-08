@@ -18,6 +18,7 @@ for crate_type in bin lib; do
       --name rust-template-generated-${crate_type} \
       --template-values-file ../template_values.toml
     ../scripts/run_cargo_tests
+    actionlint
   )
 
   rm -rf repo.${crate_type}
@@ -26,5 +27,6 @@ for crate_type in bin lib; do
   (
     cd repo.${crate_type}
     ../scripts/run_cargo_tests
+    actionlint
   )
 done

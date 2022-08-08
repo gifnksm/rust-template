@@ -55,9 +55,15 @@ jobs:
           ./tests/scripts/update_repo example_repo ${{ env.PROJECT_NAME }}
           git -C example_repo add -N .
 
-
       - name: test example
         run: (cd example_repo && ../tests/scripts/run_cargo_tests)
+
+      - name: Check workflow files
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          echo "::add-matcher::.github/actionlint-matcher.json"
+          (cd example_repo && ../actionlint -color)
+        shell: bash
 
       - name: show example diff
         run: git -C example_repo diff || true
