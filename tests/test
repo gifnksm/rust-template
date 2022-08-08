@@ -15,8 +15,16 @@ for crate_type in bin lib; do
       --init \
       --path ../../template \
       --${crate_type} \
-      --name test-project \
+      --name rust-template-generated-${crate_type} \
       --template-values-file ../template_values.toml
+    ../scripts/run_cargo_tests
+  )
+
+  rm -rf repo.${crate_type}
+  git clone https://github.com/gifnksm/rust-template-generated-${crate_type} repo.${crate_type}
+  ./scripts/update_repo repo.${crate_type} out.${crate_type}
+  (
+    cd repo.${crate_type}
     ../scripts/run_cargo_tests
   )
 done
