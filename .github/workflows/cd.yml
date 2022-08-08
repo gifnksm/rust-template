@@ -9,6 +9,7 @@ jobs:
   synchronize_example:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         rust: [stable]
         job:
