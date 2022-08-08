@@ -16,13 +16,13 @@ fn package_root(package: &Package) -> &Utf8Path {
     package.manifest_path.parent().unwrap()
 }
 
-pub fn collect_readme(package: &Package) -> Result<Utf8PathBuf> {
+pub(crate) fn collect_readme(package: &Package) -> Result<Utf8PathBuf> {
     let path = package_root(package).join("README.md");
     ensure!(path.is_file(), "README.md is not a file: {path}");
     Ok(path)
 }
 
-pub fn collect_licenses(package: &Package) -> Result<Vec<Utf8PathBuf>> {
+pub(crate) fn collect_licenses(package: &Package) -> Result<Vec<Utf8PathBuf>> {
     let mut artifacts = vec![];
     for ent in fs::read_dir(package_root(package))? {
         let ent = ent?;
@@ -39,7 +39,7 @@ pub fn collect_licenses(package: &Package) -> Result<Vec<Utf8PathBuf>> {
     Ok(artifacts)
 }
 
-pub fn cargo_build_release_exe(
+pub(crate) fn cargo_build_release_exe(
     metadata: &Metadata,
     package: &Package,
     use_cross: bool,
@@ -86,7 +86,7 @@ pub fn cargo_build_release_exe(
     Ok(artifacts)
 }
 
-pub fn compress_files_tar_gz(
+pub(crate) fn compress_files_tar_gz(
     archive_path: impl AsRef<Path>,
     files: &[impl AsRef<Path>],
 ) -> Result<()> {

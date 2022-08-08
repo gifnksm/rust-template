@@ -7,7 +7,7 @@ use color_eyre::eyre::Result;
 use crate::util;
 
 #[derive(Debug, Parser)]
-pub struct Args {
+pub(crate) struct Args {
     /// Target triple for the build
     #[clap(long)]
     target: Option<String>,
@@ -19,7 +19,7 @@ pub struct Args {
     use_cross_if_needed: bool,
 }
 
-pub fn run(args: &Args) -> Result<()> {
+pub(crate) fn run(args: &Args) -> Result<()> {
     let Args {
         target,
         use_cross,
