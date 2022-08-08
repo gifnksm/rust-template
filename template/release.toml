@@ -6,10 +6,10 @@ pre-release-replacements = [
   {file = "CHANGELOG.md", search = "<!-- next-header -->", replace = "<!-- next-header -->\n\n## [Unreleased] - ReleaseDate", exactly = 1},
   {file = "CHANGELOG.md", search = "<!-- next-url -->", replace = "<!-- next-url -->\n[Unreleased]: https://github.com/{{gh-username}}/{{project-name}}/compare/{{ '{{tag_name}}' }}...HEAD", exactly = 1},
   {%- if crate_type == "lib" %}
-  {file = "README.md", search = "{{ project-name }} = \"[0-9\\.]+\"", replace = "{{ project-name }} = \"{{ '{{version}}' }}\""},
+  {file = "README.md", search = "{{ project-name }} = \".*\"$", replace = "{{ project-name }} = \"{{ '{{version}}' }}\"", exactly = 1},
   {%- endif %}
-  {file = "src/lib.rs", search = "^//! {{ project-name }} = \"[0-9\\.]+\"", replace = "//! {{ project-name }} = \"{{ '{{version}}' }}\""},
-  {file = "src/lib.rs", search = "^#!\\[doc\\(html_root_url = \"https://docs.rs/{{ project-name }}/[0-9\\.]+\"\\)\\]", replace = "#![doc(html_root_url = \"https://docs.rs/{{ project-name }}/{{ '{{version}}' }}\")]"},
+  {file = "src/lib.rs", search = "^//! {{ project-name }} = \".*\"$", replace = "//! {{ project-name }} = \"{{ '{{version}}' }}\"", exactly = 1},
+  {file = "src/lib.rs", search = "^#!\\[doc\\(html_root_url = \"https://docs.rs/{{ project-name }}/.*\"\\)\\]$", replace = "#![doc(html_root_url = \"https://docs.rs/{{ project-name }}/{{ '{{version}}' }}\")]", exactly = 1},
 ]
 pre-release-hook = ["cargo", "test"]
 dev-version = true
