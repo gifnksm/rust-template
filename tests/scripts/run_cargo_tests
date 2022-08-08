@@ -7,6 +7,6 @@ cargo build
 cargo check
 cargo clippy
 cargo test
-if [ -d "xtask" ]; then
+if [[ -d "xtask" ]]; then
     cargo xtask dist
 fi

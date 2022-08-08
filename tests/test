@@ -6,26 +6,26 @@ test_dir="$(dirname "${BASH_SOURCE[0]}")"
 cd "${test_dir}"
 
 for crate_type in bin lib; do
-  rm -rf out.${crate_type}
-  mkdir out.${crate_type}
+  rm -rf "out.${crate_type}"
+  mkdir "out.${crate_type}"
 
   (
-    cd out.${crate_type}
+    cd "out.${crate_type}"
     cargo generate \
       --init \
       --path ../../template \
-      --${crate_type} \
-      --name rust-template-generated-${crate_type} \
+      "--${crate_type}" \
+      --name "rust-template-generated-${crate_type}" \
       --template-values-file ../template_values.toml
     ../scripts/run_cargo_tests
     actionlint
   )
 
-  rm -rf repo.${crate_type}
-  git clone https://github.com/gifnksm/rust-template-generated-${crate_type} repo.${crate_type}
-  ./scripts/update_repo repo.${crate_type} out.${crate_type}
+  rm -rf "repo.${crate_type}"
+  git clone "https://github.com/gifnksm/rust-template-generated-${crate_type}" "repo.${crate_type}"
+  ./scripts/update_repo "repo.${crate_type}" "out.${crate_type}"
   (
-    cd repo.${crate_type}
+    cd "repo.${crate_type}"
     ../scripts/run_cargo_tests
     actionlint
   )
