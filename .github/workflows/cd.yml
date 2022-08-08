@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
   synchronize_example:
@@ -50,9 +51,14 @@ jobs:
           ssh-key: ${{ env.SSH_KEY }}
 
       - name: update example
-        run: |
-          find example_repo -mindepth 1 -maxdepth 1 -not -name .git -exec rm -rf {} \;
-          find ${{ env.PROJECT_NAME }} -mindepth 1 -maxdepth 1 -not -name .git -exec cp -r {} example_repo \;
+        run: ./tests/scripts/update_repo example_repo ${{ env.PROJECT_NAME }}
+
+      - name: test example
+        run: (cd example_repo && ../tests/scripts/run_cargo_tests)
+
+      - name: show example diff
+        run: git -C example_repo diff || true
+
 
       - name: commit example
         run: |
@@ -66,3 +72,4 @@ jobs:
           else
             echo "nothing to commit";
           fi
+        if: ${{ startsWith(github.ref, 'refs/heads/main') }}

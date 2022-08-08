@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -eux
+
+repo_path="$1"
+output_path="$2"
+
+pkg_version="$(sed -n 's/^version = "\(.*\)"$/\1/p' "${repo_path}/Cargo.toml")"
+released_version="$(sed -n 's@^//! rust-template-generated-... = "\(.*\)"$@\1@p' ${repo_path}/src/lib.rs)"
+
+find "${repo_path}" -mindepth 1 -maxdepth 1 -not -name .git -a -not -name CHANGELOG.md -exec rm -rf {} \;
+find "${output_path}" -mindepth 1 -maxdepth 1 -not -name .git -a -not -name CHANGELOG.md -exec cp -r {} "${repo_path}" \;
+
+perl -i -pe 's@(?<=^rust-template-generated-... = ").*(?="$)@'"${released_version}"'@' "${repo_path}/README.md"
+perl -i -pe 's@(?<=^//! rust-template-generated-... = ").*(?="$)@'"${released_version}"'@' "${repo_path}/src/lib.rs"
+perl -i -pe 's@(?<=^#!\[doc\(html_root_url = "https://docs.rs/rust-template-generated-.../).*(?="\)\]$)@'"${released_version}"'@' "${repo_path}/src/lib.rs"
+perl -i -pe 's@(?<=^version = ").*(?="$)@'"${pkg_version}"'@' "${repo_path}/Cargo.toml"
