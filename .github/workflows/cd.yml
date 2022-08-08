@@ -27,20 +27,24 @@ jobs:
           other: "--${{ matrix.job.crate_type }}"
       - name: Run cargo generate-lockfile
         run: |
-          cd $PROJECT_NAME
+          cd "${PROJECT_NAME}"
           cargo generate-lockfile
       - name: Set env vars for bin
         run: |
-          echo 'SSH_KEY<<EOF' >> $GITHUB_ENV
-          echo "${{ secrets.GH_EXAMPLE_DEPLOY_BIN_SECRET }}" >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
+          {
+            echo 'SSH_KEY<<EOF'
+            echo "${{ secrets.GH_EXAMPLE_DEPLOY_BIN_SECRET }}"
+            echo 'EOF'
+          } >> "${GITHUB_ENV}"
         if: ${{ matrix.job.crate_type == 'bin' }}
 
       - name: Set env vars for lib
         run: |
-          echo 'SSH_KEY<<EOF' >> $GITHUB_ENV
-          echo "${{ secrets.GH_EXAMPLE_DEPLOY_LIB_SECRET }}" >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
+          {
+            echo 'SSH_KEY<<EOF'
+            echo "${{ secrets.GH_EXAMPLE_DEPLOY_LIB_SECRET }}"
+          } >> "${GITHUB_ENV}"
+          echo 'EOF' >> "${GITHUB_ENV}"
         if: ${{ matrix.job.crate_type == 'lib' }}
 
       - name: Checkout example repo

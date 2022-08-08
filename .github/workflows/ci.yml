@@ -36,7 +36,7 @@ jobs:
           workspaces: "${{ env.PROJECT_NAME }} -> target"
       - name: Cargo check
         run: |
-          cd $PROJECT_NAME
+          cd "${PROJECT_NAME}"
           ../tests/scripts/run_cargo_tests
 
   actionlint:
