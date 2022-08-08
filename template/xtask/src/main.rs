@@ -4,6 +4,7 @@ use clap::Parser;
 use color_eyre::eyre::Result;
 
 mod dist;
+mod util;
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about)]
