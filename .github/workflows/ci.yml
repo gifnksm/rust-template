@@ -9,6 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         rust: [stable]
         job:
@@ -36,5 +37,16 @@ jobs:
           workspaces: "${{ env.PROJECT_NAME }} -> target"
       - name: Cargo check
         run: |
-          cd $PROJECT_NAME
+          cd "${PROJECT_NAME}"
           ../tests/scripts/run_cargo_tests
+
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check workflow files
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          echo "::add-matcher::.github/actionlint-matcher.json"
+          ./actionlint -color
+        shell: bash

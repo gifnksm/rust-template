@@ -9,6 +9,7 @@ jobs:
   synchronize_example:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         rust: [stable]
         job:
@@ -27,20 +28,24 @@ jobs:
           other: "--${{ matrix.job.crate_type }}"
       - name: Run cargo generate-lockfile
         run: |
-          cd $PROJECT_NAME
+          cd "${PROJECT_NAME}"
           cargo generate-lockfile
       - name: Set env vars for bin
         run: |
-          echo 'SSH_KEY<<EOF' >> $GITHUB_ENV
-          echo "${{ secrets.GH_EXAMPLE_DEPLOY_BIN_SECRET }}" >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
+          {
+            echo 'SSH_KEY<<EOF'
+            echo "${{ secrets.GH_EXAMPLE_DEPLOY_BIN_SECRET }}"
+            echo 'EOF'
+          } >> "${GITHUB_ENV}"
         if: ${{ matrix.job.crate_type == 'bin' }}
 
       - name: Set env vars for lib
         run: |
-          echo 'SSH_KEY<<EOF' >> $GITHUB_ENV
-          echo "${{ secrets.GH_EXAMPLE_DEPLOY_LIB_SECRET }}" >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
+          {
+            echo 'SSH_KEY<<EOF'
+            echo "${{ secrets.GH_EXAMPLE_DEPLOY_LIB_SECRET }}"
+          } >> "${GITHUB_ENV}"
+          echo 'EOF' >> "${GITHUB_ENV}"
         if: ${{ matrix.job.crate_type == 'lib' }}
 
       - name: Checkout example repo
@@ -55,9 +60,15 @@ jobs:
           ./tests/scripts/update_repo example_repo ${{ env.PROJECT_NAME }}
           git -C example_repo add -N .
 
-
       - name: test example
         run: (cd example_repo && ../tests/scripts/run_cargo_tests)
+
+      - name: Check workflow files
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          echo "::add-matcher::.github/actionlint-matcher.json"
+          (cd example_repo && ../actionlint -color)
+        shell: bash
 
       - name: show example diff
         run: git -C example_repo diff || true
