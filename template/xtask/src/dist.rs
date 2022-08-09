@@ -1,69 +1,61 @@
-use std::{fs, path::Path};
+use std::fs;
 
-use cargo_metadata::{camino::Utf8PathBuf, Metadata, MetadataCommand, Package};
 use clap::Parser;
 use color_eyre::eyre::Result;
 
-use crate::util;
+use crate::{build_doc, build_exe, build_license, build_man, metadata, util};
 
 #[derive(Debug, Parser)]
+#[clap(author, version, about)]
 pub(crate) struct Args {
-    /// Target triple for the build
-    #[clap(long)]
-    target: Option<String>,
-    /// Use cross tool to build
-    #[clap(long)]
-    use_cross: bool,
-    /// Use cross if target is different from default target
-    #[clap(long)]
-    use_cross_if_needed: bool,
+    #[clap(flatten)]
+    build_doc_args: build_doc::Args,
+    #[clap(flatten)]
+    build_license_args: build_license::Args,
+    #[clap(flatten)]
+    build_man_args: build_man::Args,
+    #[clap(flatten)]
+    build_exe_args: build_exe::Args,
 }
 
-pub(crate) fn run(args: &Args) -> Result<()> {
-    let Args {
-        target,
-        use_cross,
-        use_cross_if_needed,
-    } = args;
+impl Args {
+    #[tracing::instrument(name = "dist", skip_all, err)]
+    pub(crate) fn run(&self) -> Result<()> {
+        let Args {
+            build_doc_args,
+            build_license_args,
+            build_man_args,
+            build_exe_args,
+        } = self;
 
-    let target = target.as_deref();
-    let use_cross = *use_cross
-        || (*use_cross_if_needed && target.map(|t| t != env!("DEFAULT_TARGET")).unwrap_or(false));
+        let metadata = metadata::get();
+        let root_package = metadata.root_package().unwrap();
 
-    let metadata = MetadataCommand::new().exec()?;
-    let root_package = &metadata.root_package().unwrap();
+        let package_dir = util::create_or_cleanup_xtask_package_directory("")?;
 
-    let mut artifacts_path = vec![util::collect_readme(root_package)?];
-    for artifact in util::collect_licenses(root_package)? {
-        artifacts_path.push(artifact);
+        build_doc_args.run()?;
+        build_license_args.run()?;
+        build_man_args.run()?;
+        build_exe_args.run()?;
+
+        let dist_dir = metadata.target_directory.join("dist");
+        fs::create_dir_all(&dist_dir)?;
+
+        let target = build_exe_args
+            .target
+            .as_deref()
+            .unwrap_or(env!("DEFAULT_TARGET"));
+        let archive_name = format!(
+            "{}-v{}-{target}.tar.gz",
+            root_package.name, root_package.version
+        );
+
+        let archive_path = dist_dir.join(archive_name);
+
+        tracing::info!("Creating archive: {archive_path}");
+
+        util::compress_files_tar_gz(&archive_path, package_dir)?;
+
+        Ok(())
     }
-    for artifact in util::cargo_build_release_exe(&metadata, root_package, use_cross, target)? {
-        artifacts_path.push(artifact);
-    }
-    let archive_path = create_archive(&metadata, root_package, target, &artifacts_path)?;
-
-    tracing::info!(%archive_path, "dist completed successfully");
-
-    Ok(())
-}
-
-fn create_archive(
-    metadata: &Metadata,
-    package: &Package,
-    target: Option<&str>,
-    artifacts: &[impl AsRef<Path>],
-) -> Result<Utf8PathBuf> {
-    let dist_dir = metadata.target_directory.join("dist");
-    fs::create_dir_all(&dist_dir)?;
-
-    let target = target.unwrap_or(env!("DEFAULT_TARGET"));
-    let archive_name = format!("{}-v{}-{target}.tar.gz", package.name, package.version);
-
-    let archive_path = dist_dir.join(archive_name);
-
-    tracing::info!("Creating archive: {archive_path}");
-
-    util::compress_files_tar_gz(&archive_path, artifacts)?;
-
-    Ok(archive_path)
 }

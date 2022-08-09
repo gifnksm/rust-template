@@ -10,7 +10,17 @@
 //! ```
 
 #![doc(html_root_url = "https://docs.rs/{{project-name}}/0.0.0")]
+{% if crate_type == "bin" %}
+use clap::Parser;
 
+#[derive(Parser)]
+pub struct Args {}
+
+pub fn main() {
+    let _args = Args::parse();
+}
+
+{%- endif %}
 #[cfg(test)]
 mod tests {
     #[test]

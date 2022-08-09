@@ -17,7 +17,9 @@ categories = []
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-
+{% if crate_type == "bin" -%}
+clap = { version = "3.2.16", features = ["derive"] }
+{% endif %}
 [dev-dependencies]
 {% if crate_type == "lib" -%}
 cargo-readme = "3.2.0"
