@@ -1,7 +1,7 @@
 use std::fs;
 
 use clap::Parser;
-use color_eyre::eyre::Result;
+use color_eyre::eyre::{ensure, Result};
 
 use crate::{metadata, util};
 
@@ -19,10 +19,13 @@ impl Args {
         let metadata = metadata::get();
         let root_package = metadata.root_package().unwrap();
 
-        let license_dir = util::create_or_cleanup_xtask_package_directory("share/license")?;
+        let src_dir = util::package_root_directory(root_package);
+        let dest_dir = util::create_or_cleanup_xtask_package_directory("share/license")?;
 
-        for src in util::collect_licenses(root_package)? {
-            let dest = license_dir.join(src.file_name().unwrap());
+        for name in ["LICENSE-MIT", "LICENSE-APACHE"] {
+            let src = src_dir.join(name);
+            let dest = dest_dir.join(name);
+            ensure!(src.is_file(), "{name} is not a file: {src}");
             tracing::info!(
                 "  {} -> {}",
                 util::to_relative(&src),
