@@ -1,10 +1,15 @@
-use std::fs;
+use std::{
+    fs,
+    io::BufReader,
+    process::{Command, Stdio},
+};
 
+use cargo_metadata::{camino::Utf8PathBuf, Artifact, Message, Package};
 use clap::Parser;
 
-use color_eyre::eyre::Result;
+use color_eyre::eyre::{ensure, Error, Result};
 
-use crate::{metadata, util};
+use crate::{iter::TryIterator, metadata, util};
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about)]
@@ -40,7 +45,7 @@ impl Args {
         let root_package = metadata.root_package().unwrap();
 
         let exe_dir = util::create_or_cleanup_xtask_package_directory("bin")?;
-        for src in util::cargo_build_release_exe(root_package, use_cross, target)? {
+        for src in cargo_build_release_exe(root_package, use_cross, target)? {
             let src = src?;
             let dest = exe_dir.join(src.file_name().unwrap());
             tracing::info!(
@@ -53,4 +58,47 @@ impl Args {
 
         Ok(())
     }
+}
+
+fn cargo_build_release_exe(
+    package: &Package,
+    use_cross: bool,
+    target: Option<&str>,
+) -> Result<impl Iterator<Item = Result<Utf8PathBuf>>> {
+    let metadata = metadata::get();
+    let cmd_name = if use_cross { "cross" } else { "cargo" };
+    let mut args = vec![
+        "build",
+        "--release",
+        "--package",
+        package.name.as_str(),
+        "--message-format=json-render-diagnostics",
+    ];
+
+    if let Some(target) = target {
+        args.extend_from_slice(&["--target", target]);
+    }
+
+    let mut cmd = Command::new(cmd_name);
+    cmd.args(&args);
+
+    tracing::info!("  $ {} {}", cmd_name, args.join(" "));
+    let mut cmd = cmd.stdout(Stdio::piped()).spawn()?;
+
+    let reader = BufReader::new(cmd.stdout.take().unwrap());
+    let it = Message::parse_stream(reader)
+        .map_err(Error::from)
+        .filter_map_ok(|msg| match msg {
+            Message::CompilerArtifact(Artifact { executable, .. }) => executable,
+            _ => None,
+        })
+        .and_then(move |mut exe| {
+            if use_cross {
+                let relative_path = exe.strip_prefix("/target").unwrap();
+                exe = metadata.target_directory.join(relative_path)
+            }
+            ensure!(exe.is_file(), "Artifact is not a file: {exe}");
+            Ok(exe)
+        });
+    Ok(it)
 }
