@@ -2,7 +2,7 @@
 ignore = [ "tests", "README.tpl" ]
 
 [conditional.'crate_type == "lib"']
-ignore = [ "src/main.rs", "xtask", "codecov.yml" ]
+ignore = [ "src/main.rs", "xtask", "codecov.yml", ".cargo" ]
 
 [placeholders.project-description]
 type = "string"
