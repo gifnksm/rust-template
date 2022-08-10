@@ -9,6 +9,7 @@ publish = false
 [dependencies]
 cargo_metadata = "0.15.0"
 clap = { version = "3.2.16", features = ["derive"] }
+clap_complete = "3.2.3"
 clap_mangen = "0.1.10"
 color-eyre = "0.6.2"
 flate2 = "1.0.24"

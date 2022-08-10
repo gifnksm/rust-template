@@ -3,29 +3,32 @@ use std::fs;
 use clap::Parser;
 use color_eyre::eyre::Result;
 
-use crate::{build_doc, build_exe, build_license, build_man, metadata, util};
+use crate::{build_completion, build_doc, build_exe, build_license, build_man, metadata, util};
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about)]
 pub(crate) struct Args {
     #[clap(flatten)]
-    build_doc_args: build_doc::Args,
+    build_exe_args: build_exe::Args,
     #[clap(flatten)]
-    build_license_args: build_license::Args,
+    build_doc_args: build_doc::Args,
     #[clap(flatten)]
     build_man_args: build_man::Args,
     #[clap(flatten)]
-    build_exe_args: build_exe::Args,
+    build_license_args: build_license::Args,
+    #[clap(flatten)]
+    build_completion_args: build_completion::Args,
 }
 
 impl Args {
     #[tracing::instrument(name = "dist", skip_all, err)]
     pub(crate) fn run(&self) -> Result<()> {
         let Args {
-            build_doc_args,
-            build_license_args,
-            build_man_args,
             build_exe_args,
+            build_doc_args,
+            build_man_args,
+            build_license_args,
+            build_completion_args,
         } = self;
 
         let metadata = metadata::get();
@@ -33,10 +36,11 @@ impl Args {
 
         let package_dir = util::create_or_cleanup_xtask_package_directory("")?;
 
-        build_doc_args.run()?;
-        build_license_args.run()?;
-        build_man_args.run()?;
         build_exe_args.run()?;
+        build_doc_args.run()?;
+        build_man_args.run()?;
+        build_license_args.run()?;
+        build_completion_args.run()?;
 
         let dist_dir = metadata.target_directory.join("dist");
         fs::create_dir_all(&dist_dir)?;
