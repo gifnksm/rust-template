@@ -77,7 +77,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: {{ "${{ fromJSON(needs.set-matrix.outputs.rust) }}" }}
+        rust: [ stable ]
         os: {{ "${{ fromJSON(needs.set-matrix.outputs.os) }}" }}
         features: {{ "${{ fromJSON(needs.set-matrix.outputs.features) }}" }}
     runs-on: {{ "${{ matrix.os }}" }}
