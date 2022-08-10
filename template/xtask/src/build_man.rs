@@ -9,7 +9,7 @@ use clap_mangen::Man;
 use color_eyre::eyre::Result;
 use time::OffsetDateTime;
 
-use crate::util;
+use crate::{metadata, util};
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about)]
@@ -22,9 +22,12 @@ impl Args {
 
         let Args {} = self;
 
+        let metadata = metadata::get();
+        let root_package = metadata.root_package().unwrap();
+
         let man_dir = util::create_or_cleanup_xtask_package_directory("share/man")?;
-        let cmd = {{ crate_name }}::Args::command();
-        let package_name = "{{ project-name }}";
+        let cmd = {{ crate_name}}::Args::command();
+        let package_name = root_package.name.as_str();
         let section = "1";
         for path in build_man_pages(&man_dir, cmd, package_name, section)? {
             let path = path?;
