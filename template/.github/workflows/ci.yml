@@ -40,9 +40,9 @@ jobs:
 
           features="$(echo "${root_package}" | jq '.features | del(.default) | keys | map("--features " + . + " --no-default-features")')"
           if [[ "$(echo "${features}" | jq 'length')" -gt "0" ]]; then
-            features="$(echo "${features}" | jq -c '. + ["--no-default-features", "--all-features"]')"
+            features="$(echo "${features}" | jq -c '. + ["--no-default-features", "--all-features", ""]')"
           else
-            features='["--all-features"]'
+            features='[""]'
           fi
           echo "::set-output name=features::${features}"
 
