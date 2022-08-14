@@ -125,6 +125,29 @@ jobs:
       - name: cargo build
         run: cargo build --workspace --all-targets {{ "${{ matrix.features }}" }}
 
+  udeps:
+    name: Unused dependency
+    needs: set-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        os: {{ "${{ fromJSON(needs.set-matrix.outputs.os) }}" }}
+        features: {{ "${{ fromJSON(needs.set-matrix.outputs.features) }}" }}
+    runs-on: {{ "${{ matrix.os }}" }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          override: true
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: {{ "${{ matrix.features }}" }}
+      - uses: taiki-e/install-action@cargo-udeps
+      - name: cargo udeps
+        run: cargo udeps --workspace --all-targets {{ "${{ matrix.features }}" }}
+
   rustfmt:
     name: Rustfmt
     runs-on: ubuntu-latest
