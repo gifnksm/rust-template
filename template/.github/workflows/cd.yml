@@ -44,11 +44,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: {{ "${{ matrix.rust }}" }}
-          profile: minimal
-          override: true
       - uses: Swatinem/rust-cache@v2
         with:
           key: {{ "${{ matrix.job.target }}" }}

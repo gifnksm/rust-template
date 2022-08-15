@@ -18,11 +18,7 @@ jobs:
       features: {{ "${{ steps.set-values.outputs.features}}" }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
+      - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Set matrix values
         id: set-values
@@ -60,11 +56,9 @@ jobs:
     runs-on: {{ "${{ matrix.os }}" }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: {{ "${{ matrix.rust }}" }}
-          profile: minimal
-          override: true
       - uses: Swatinem/rust-cache@v2
         with:
           key: {{ "${{ matrix.features }}" }}
@@ -83,12 +77,10 @@ jobs:
     runs-on: {{ "${{ matrix.os }}" }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: {{ "${{ matrix.rust }}" }}
-          profile: minimal
           components: llvm-tools-preview
-          override: true
       - uses: Swatinem/rust-cache@v2
         with:
           key: {{ "${{ matrix.features }}" }}
@@ -114,11 +106,9 @@ jobs:
     runs-on: {{ "${{ matrix.os }}" }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: {{ "${{ matrix.rust }}" }}
-          profile: minimal
-          override: true
       - uses: Swatinem/rust-cache@v2
         with:
           key: {{ "${{ matrix.features }}" }}
@@ -136,11 +126,7 @@ jobs:
     runs-on: {{ "${{ matrix.os }}" }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          override: true
+      - uses: dtolnay/rust-toolchain@nightly
       - uses: Swatinem/rust-cache@v2
         with:
           key: {{ "${{ matrix.features }}" }}
@@ -153,12 +139,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          profile: minimal
           components: rustfmt
-          override: true
       - uses: Swatinem/rust-cache@v2
       - name: cargo fmt
         run: cargo fmt --all --check
@@ -173,12 +156,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          profile: minimal
           components: clippy
-          override: true
       - uses: Swatinem/rust-cache@v2
         with:
           key: {{ "${{ matrix.features }}" }}
@@ -190,11 +170,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
+      - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: cargo doc
         uses: actions-rs/cargo@v1
@@ -209,11 +185,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
+      - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - uses: actions-rs/cargo@v1
         with:
