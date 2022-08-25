@@ -5,6 +5,9 @@ on:
       - main
   pull_request:
   workflow_dispatch:
+  schedule:
+    # Runs at 00:00 UTC everyday
+    - cron: "0 0 * * *"
 
 jobs:
   synchronize_example:
