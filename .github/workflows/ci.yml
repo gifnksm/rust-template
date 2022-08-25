@@ -35,10 +35,15 @@ jobs:
         with:
           key: ${{ env.PROJECT_NAME }}
           workspaces: "${{ env.PROJECT_NAME }} -> target"
+      - uses: taiki-e/install-action@v1
+        with:
+          tool: cargo-udeps,cargo-rdme
+      - run: rustup toolchain add nightly --profile minimal
+        shell: bash
       - name: Cargo check
         run: |
           cd "${PROJECT_NAME}"
-          ../tests/scripts/run_cargo_tests
+          ../tests/scripts/run_cargo_tests "${{ matrix.job.crate_type }}"
 
   actionlint:
     runs-on: ubuntu-latest

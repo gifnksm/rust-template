@@ -1,60 +1,28 @@
-use std::env;
-
-use clap::Parser;
-use color_eyre::eyre::Result;
-
-mod build_completion;
-mod build_doc;
-mod build_exe;
-mod build_license;
-mod build_man;
-mod dist;
-mod iter;
-mod metadata;
-mod util;
-
-#[derive(Debug, Parser)]
-#[clap(author, version, about)]
-enum Args {
-    /// Package the executables and produce a set of distributable artifacts
-    Dist(dist::Args),
-    /// Build the executables
-    BuildExe(build_exe::Args),
-    /// Build the documentation
-    BuildDoc(build_doc::Args),
-    /// Build the man page
-    BuildMan(build_man::Args),
-    /// Build the license files
-    BuildLicense(build_license::Args),
-    /// Build the shell completion files
-    BuildCompletion(build_completion::Args),
-}
-
-impl Args {
-    #[tracing::instrument(name = "xtask", skip_all, err)]
-    fn run(&self) -> Result<()> {
-        match self {
-            Args::Dist(args) => args.run(),
-            Args::BuildExe(args) => args.run(),
-            Args::BuildDoc(args) => args.run(),
-            Args::BuildMan(args) => args.run(),
-            Args::BuildLicense(args) => args.run(),
-            Args::BuildCompletion(args) => args.run(),
-        }
-    }
-}
+{%- if crate_type == "bin" -%}
+use cli_xtask::{
+    clap::CommandFactory,
+    config::{ConfigBuilder, DistConfigBuilder},
+    workspace, Result, Xtask,
+};
 
 fn main() -> Result<()> {
-    if env::var_os("RUST_LOG").is_none() {
-        env::set_var("RUST_LOG", "info");
-    }
-
-    tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-        .with_writer(std::io::stderr)
-        .with_target(false)
-        .init();
-    color_eyre::install()?;
-
-    Args::parse().run()
+    <Xtask>::main_with_config(|| {
+        let workspace = workspace::current();
+        let (dist, package) = DistConfigBuilder::from_root_package(workspace)?;
+        let command = {{ crate_name }}::App::command();
+        let target = package
+            .binary_by_name(command.get_name())?
+            .command(command)
+            .build()?;
+        let dist = dist.package(package.target(target).build()?).build()?;
+        let config = ConfigBuilder::new().dist(dist).build()?;
+        Ok(config)
+    })
 }
+{%- else -%}
+use cli_xtask::{Result, Xtask};
+
+fn main() -> Result<()> {
+    <Xtask>::main()
+}
+{%- endif %}

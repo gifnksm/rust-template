@@ -17,7 +17,7 @@ for crate_type in bin lib; do
       "--${crate_type}" \
       --name "rust-template-generated-${crate_type}" \
       --template-values-file ../template_values.toml
-    ../scripts/run_cargo_tests
+    ../scripts/run_cargo_tests "${crate_type}"
     actionlint
   )
 
@@ -26,7 +26,7 @@ for crate_type in bin lib; do
   ./scripts/update_repo "repo.${crate_type}" "out.${crate_type}"
   (
     cd "repo.${crate_type}"
-    ../scripts/run_cargo_tests
+    ../scripts/run_cargo_tests "${crate_type}"
     actionlint
   )
 done

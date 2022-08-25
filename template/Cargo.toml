@@ -1,7 +1,6 @@
-{% if crate_type == "bin" -%}
 [workspace]
 members = ["xtask"]
-{% endif %}
+
 [package]
 name = "{{project-name}}"
 version = "0.1.0-alpha.0"
@@ -21,9 +20,6 @@ categories = []
 clap = { version = "3.2.17", features = ["derive"] }
 {% endif %}
 [dev-dependencies]
-{% if crate_type == "lib" -%}
-cargo-readme = "3.2.0"
-{% endif %}
 [build-dependencies]
 
 [profile.dev]

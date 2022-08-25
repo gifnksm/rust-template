@@ -15,7 +15,6 @@ jobs:
     outputs:
       rust: {{ "${{ steps.set-values.outputs.rust }}" }}
       os: {{ "${{ steps.set-values.outputs.os }}" }}
-      features: {{ "${{ steps.set-values.outputs.features}}" }}
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
@@ -34,15 +33,7 @@ jobs:
           os="$(echo '["ubuntu-latest", "macos-latest", "windows-latest"]' | jq -c)"
           echo "::set-output name=os::${os}"
 
-          features="$(echo "${root_package}" | jq '.features | keys | map("--features " + . + " --no-default-features")')"
-          if [[ "$(echo "${features}" | jq 'length')" -gt "0" ]]; then
-            features="$(echo "${features}" | jq -c '. + ["--no-default-features", "--all-features"]')"
-          else
-            features='[""]'
-          fi
-          echo "::set-output name=features::${features}"
-
-          jq -n --argjson rust "${rust}" --argjson os "${os}" --argjson features "${features}" '{ rust: $rust, os: $os, features: $features }'
+          jq -n --argjson rust "${rust}" --argjson os "${os}" '{ rust: $rust, os: $os }'
 
   test:
     name: Test
@@ -52,7 +43,6 @@ jobs:
       matrix:
         rust: {{ "${{ fromJSON(needs.set-matrix.outputs.rust) }}" }}
         os: {{ "${{ fromJSON(needs.set-matrix.outputs.os) }}" }}
-        features: {{ "${{ fromJSON(needs.set-matrix.outputs.features) }}" }}
     runs-on: {{ "${{ matrix.os }}" }}
     steps:
       - uses: actions/checkout@v3
@@ -60,20 +50,17 @@ jobs:
         with:
           toolchain: {{ "${{ matrix.rust }}" }}
       - uses: Swatinem/rust-cache@v2
-        with:
-          key: {{ "${{ matrix.features }}" }}
-      - name: cargo test
-        run: cargo test --workspace --all-targets {{ "${{ matrix.features }}" }}
+      - run: cargo xtask test --exhaustive
+        shell: bash
 
   coverage:
-    name: Code coverage
+    name: Coverage (test)
     needs: set-matrix
     strategy:
       fail-fast: false
       matrix:
         rust: [ stable ]
         os: {{ "${{ fromJSON(needs.set-matrix.outputs.os) }}" }}
-        features: {{ "${{ fromJSON(needs.set-matrix.outputs.features) }}" }}
     runs-on: {{ "${{ matrix.os }}" }}
     steps:
       - uses: actions/checkout@v3
@@ -82,14 +69,10 @@ jobs:
           toolchain: {{ "${{ matrix.rust }}" }}
           components: llvm-tools-preview
       - uses: Swatinem/rust-cache@v2
-        with:
-          key: {{ "${{ matrix.features }}" }}
-      - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
-      - name: Generate code coverage
-        run: cargo llvm-cov --workspace {{ "${{ matrix.features }}" }} --lcov --output-path lcov.info
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      - run: cargo llvm-cov --workspace --all-features --lcov --output-path lcov.info
+        shell: bash
+      - uses: codecov/codecov-action@v3
         with:
           files: lcov.info
           fail_ci_if_error: true
@@ -102,7 +85,6 @@ jobs:
       matrix:
         rust: {{ "${{ fromJSON(needs.set-matrix.outputs.rust) }}" }}
         os: {{ "${{ fromJSON(needs.set-matrix.outputs.os) }}" }}
-        features: {{ "${{ fromJSON(needs.set-matrix.outputs.features) }}" }}
     runs-on: {{ "${{ matrix.os }}" }}
     steps:
       - uses: actions/checkout@v3
@@ -110,87 +92,45 @@ jobs:
         with:
           toolchain: {{ "${{ matrix.rust }}" }}
       - uses: Swatinem/rust-cache@v2
-        with:
-          key: {{ "${{ matrix.features }}" }}
-      - name: cargo build
-        run: cargo build --workspace --all-targets {{ "${{ matrix.features }}" }}
+      - run: cargo xtask build --exhaustive -- --all-targets
+        shell: bash
 
-  udeps:
-    name: Unused dependency
+  lint:
+    name: Lint
     needs: set-matrix
     strategy:
       fail-fast: false
       matrix:
         os: {{ "${{ fromJSON(needs.set-matrix.outputs.os) }}" }}
-        features: {{ "${{ fromJSON(needs.set-matrix.outputs.features) }}" }}
     runs-on: {{ "${{ matrix.os }}" }}
     steps:
       - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@nightly
-      - uses: Swatinem/rust-cache@v2
-        with:
-          key: {{ "${{ matrix.features }}" }}
-      - uses: taiki-e/install-action@cargo-udeps
-      - name: cargo udeps
-        run: cargo udeps --workspace --all-targets {{ "${{ matrix.features }}" }}
-
-  rustfmt:
-    name: Rustfmt
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
         with:
-          components: rustfmt
+          components: rustfmt,clippy
       - uses: Swatinem/rust-cache@v2
-      - name: cargo fmt
-        run: cargo fmt --all --check
-
-  clippy:
-    name: Clippy
-    needs: set-matrix
-    strategy:
-      fail-fast: false
-      matrix:
-        features: {{ "${{ fromJSON(needs.set-matrix.outputs.features) }}" }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@v1
         with:
-          components: clippy
-      - uses: Swatinem/rust-cache@v2
-        with:
-          key: {{ "${{ matrix.features }}" }}
-      - name: Run clippy
-        run: cargo clippy --workspace --all-targets {{ "${{ matrix.features }}" }} -- -D warnings
+          tool: cargo-udeps,cargo-rdme
+      - run: rustup toolchain add nightly --profile minimal
+        shell: bash
+      - run: cargo xtask lint --exhaustive
+        shell: bash
 
-  rustdoc:
-    name: Docs
+  release-dry-run:
+    name: Release dry run
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - name: cargo doc
-        uses: actions-rs/cargo@v1
-        env:
-          RUSTDOCFLAGS: -D warnings
+      - uses: taiki-e/install-action@v1
         with:
-          command: doc
-          args: --no-deps --document-private-items --workspace --all-features --examples
-
-  publish-dry-run:
-    name: Publish dry run
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - uses: actions-rs/cargo@v1
-        with:
-          command: publish
-          args: --dry-run
+          tool: cargo-udeps,cargo-rdme,cargo-release
+      - run: rustup toolchain add nightly --profile minimal
+        shell: bash
+      - run: cargo release patch -vv --allow-branch '*'
+        shell: bash
 
   actionlint:
     runs-on: ubuntu-latest
