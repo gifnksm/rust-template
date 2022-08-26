@@ -1,8 +1,5 @@
-[conditional.'crate_type == "bin"']
-ignore = [ "tests", "README.tpl" ]
-
 [conditional.'crate_type == "lib"']
-ignore = [ "src/main.rs", "xtask", "codecov.yml", ".cargo" ]
+ignore = [ "src/main.rs" ]
 
 [placeholders.project-description]
 type = "string"

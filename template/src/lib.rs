@@ -13,11 +13,11 @@
 {% if crate_type == "bin" %}
 use clap::Parser;
 
-#[derive(Parser)]
-pub struct Args {}
+#[derive(clap::Parser)]
+pub struct App {}
 
 pub fn main() {
-    let _args = Args::parse();
+    let _args = App::parse();
 }
 
 {%- endif %}

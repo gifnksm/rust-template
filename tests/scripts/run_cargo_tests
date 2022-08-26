@@ -2,11 +2,23 @@
 
 set -eux
 
-cargo fmt --check
-cargo build
-cargo check
-cargo clippy
-cargo test
-if [[ -d "xtask" ]]; then
-    cargo xtask dist
+if [[ "$#" -ne 1 ]]; then
+  echo "Usage: $0 <crate_type>" >&2
+  exit 1
+fi
+
+crate_type="$1"
+case "${crate_type}" in
+bin | lib) ;;
+*)
+  echo "Invalid crate_type: ${crate_type}" >&2
+  exit 1
+  ;;
+esac
+
+cargo xtask build --exhaustive -- --all-targets
+cargo xtask test --exhaustive
+cargo xtask lint --exhaustive
+if [[ "${crate_type}" == "bin" ]]; then
+  cargo xtask dist
 fi
