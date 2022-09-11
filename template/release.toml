@@ -11,5 +11,5 @@ pre-release-replacements = [
   {file = "src/lib.rs", search = "^//! {{ project-name }} = \".*\"$", replace = "//! {{ project-name }} = \"{{ '{{version}}' }}\"", exactly = 1},
   {file = "src/lib.rs", search = "^#!\\[doc\\(html_root_url = \"https://docs.rs/{{ project-name }}/.*\"\\)\\]$", replace = "#![doc(html_root_url = \"https://docs.rs/{{ project-name }}/{{ '{{version}}' }}\")]", exactly = 1},
 ]
-pre-release-hook = ["cargo", "test"]
+pre-release-hook = ["cargo", "xtask", "pre-release"]
 dev-version = true
