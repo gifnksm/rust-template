@@ -16,7 +16,8 @@ for crate_type in bin lib; do
       --path ../../template \
       "--${crate_type}" \
       --name "rust-template-generated-${crate_type}" \
-      --template-values-file ../template_values.toml
+      --template-values-file ../template_values.toml \
+      --allow-commands
     ../scripts/run_cargo_tests "${crate_type}"
     actionlint
   )

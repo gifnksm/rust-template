@@ -1,3 +1,6 @@
+[hooks]
+post = ["post-script.rhai"]
+
 [conditional.'crate_type == "lib"']
 ignore = [ "src/main.rs" ]
 
