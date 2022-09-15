@@ -25,17 +25,12 @@ jobs:
       - uses: actions/checkout@v3
       - uses: taiki-e/install-action@v1
         with:
-          tool: cargo-udeps,cargo-rdme
+          tool: cargo-udeps,cargo-sync-rdme,cargo-generate
       - run: rustup toolchain add nightly --profile minimal
         shell: bash
 
-      - name: Run cargo generate
-        uses: cargo-generate/cargo-generate-action@v0.16.0
-        with:
-          name: ${{ env.PROJECT_NAME }}
-          subfolder: template
-          template_values_file: tests/template_values.toml
-          other: "--${{ matrix.job.crate_type }}"
+      - run: cargo generate --name "${{ env.PROJECT_NAME }}" --path "template" --template-values-file tests/template_values.toml --${{matrix.job.crate_type}} --allow-commands
+        shell: bash
       - name: Run cargo generate-lockfile
         run: |
           cd "${PROJECT_NAME}"

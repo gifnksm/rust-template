@@ -19,26 +19,17 @@ jobs:
       PROJECT_NAME: rust-template-generated-${{ matrix.job.crate_type }}
     steps:
       - uses: actions/checkout@v3
-      - name: Run cargo generate
-        uses: cargo-generate/cargo-generate-action@v0.16.0
-        with:
-          name: ${{ env.PROJECT_NAME }}
-          subfolder: template
-          template_values_file: tests/template_values.toml
-          other: "--${{ matrix.job.crate_type }}"
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           profile: minimal
           override: true
-      - uses: Swatinem/rust-cache@v2
-        with:
-          key: ${{ env.PROJECT_NAME }}
-          workspaces: "${{ env.PROJECT_NAME }} -> target"
       - uses: taiki-e/install-action@v1
         with:
-          tool: cargo-udeps,cargo-rdme
+          tool: cargo-udeps,cargo-sync-rdme,cargo-generate
       - run: rustup toolchain add nightly --profile minimal
+        shell: bash
+      - run: cargo generate --name "${{ env.PROJECT_NAME }}" --path "template" --template-values-file tests/template_values.toml --${{matrix.job.crate_type}} --allow-commands
         shell: bash
       - name: Cargo check
         run: |
