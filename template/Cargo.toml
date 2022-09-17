@@ -34,7 +34,7 @@ pkg-fmt = "tgz"
 {% endif %}
 [dependencies]
 {% if crate_type == "bin" -%}
-clap = { version = "3.2.17", features = ["derive"] }
+clap = { version = "3.2.22", features = ["derive"] }
 {% endif %}
 [dev-dependencies]
 [build-dependencies]
