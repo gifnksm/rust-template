@@ -25,6 +25,9 @@ on:
         required: false
         type: boolean
         default: true
+    outputs:
+      rust: ${{ jobs.set-matrix.outputs.rust }}
+      os: ${{ jobs.set-matrix.outputs.os }}
 
 env:
   CARGO_TERM_COLOR: always
