@@ -18,4 +18,4 @@ jobs:
         crate_type: [ {{ crate_type }} ]
     uses: gifnksm/rust-template/.github/workflows/reusable-cd.yml@main
     with:
-      upload-dist-archive: {{ "${{ matrix.crate_type }}" == 'bin' }}
+      upload-dist-archive: {{ "${{ matrix.crate_type == 'bin' }}" }}
