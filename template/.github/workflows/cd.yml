@@ -13,6 +13,9 @@ on:
 
 jobs:
   cd:
+    strategy:
+      matrix:
+        crate_type: [ {{ crate_type }} ]
     uses: gifnksm/rust-template/.github/workflows/reusable-cd.yml@main
     with:
-      upload-dist-archive: {{ "${{ env.CRATE_TYPE == 'bin' }}" }}
+      upload-dist-archive: {{ "${{ matrix.crate_type }}" }}
