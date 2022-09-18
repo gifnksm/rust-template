@@ -11,8 +11,7 @@ for crate_type in bin lib; do
 
   (
     cd "out.${crate_type}"
-    cargo generate \
-      --init \
+    cargo generate -vv --init \
       --path ../../template \
       "--${crate_type}" \
       --name "rust-template-generated-${crate_type}" \

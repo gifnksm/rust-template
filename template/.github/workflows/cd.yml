@@ -1,76 +1,18 @@
 name: CD
 
+env:
+  CRATE_TYPE: "{{ crate_type }}"
+
 on:
   push:
     tags:
       - "v?[0-9]+.[0-9]+.[0-9]+"
-{%- if crate_type == "bin" %}
     branches:
       - main
   pull_request:
-{%- endif %}
 
 jobs:
-{%- if crate_type == "lib" %}
-  release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Releasing assets
-        uses: softprops/action-gh-release@v1
-        with:
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
-        if: {{ "${{ startsWith(github.ref, 'refs/tags/') }}" }}
-{%- else %}
-  publish:
-    name: Publishing for {{ "${{ matrix.job.target }}" }}
-    runs-on: {{ "${{ matrix.job.os }}" }}
-    strategy:
-      fail-fast: false
-      matrix:
-        rust: [stable]
-        job:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-          - os: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
-          - os: ubuntu-latest
-            target: i686-unknown-linux-gnu
-          - os: macos-latest
-            target: x86_64-apple-darwin
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@v1
-        with:
-          toolchain: {{ "${{ matrix.rust }}" }}
-      - uses: Swatinem/rust-cache@v2
-        with:
-          key: {{ "${{ matrix.job.target }}" }}
-      - name: Install cross
-        uses: taiki-e/install-action@cross
-
-      - name: cargo xtask dist
-        uses: actions-rs/cargo@v1
-        with:
-          command: xtask
-          toolchain: {{ "${{ matrix.rust }}" }}
-          args: dist --use-cross-if-needed --target {{ "${{ matrix.job.target }}" }}
-
-      - name: Upload binaries as artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          path: target/dist/*
-
-      - name: Releasing assets
-        uses: softprops/action-gh-release@v1
-        with:
-          files: target/dist/*
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
-        if: {{ "${{ startsWith(github.ref, 'refs/tags/') }}" }}
-{%- endif %}
+  cd:
+    uses: gifnksm/rust-template/.github/workflows/reusable-cd.yml@main
+    with:
+      upload-dist-archive: {{ "${{ env.CRATE_TYPE == 'bin' }}" }}
