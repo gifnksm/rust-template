@@ -12,3 +12,10 @@ on:
 jobs:
   audit:
     uses: gifnksm/rust-template/.github/workflows/reusable-audit.yml@main
+
+  audit-complete:
+    needs: audit
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Audit completed"
+        shell: bash
