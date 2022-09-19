@@ -12,3 +12,10 @@ env:
 jobs:
   ci:
     uses: gifnksm/rust-template/.github/workflows/reusable-ci.yml@main
+
+  ci-complete:
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "CI completed"
+        shell: bash

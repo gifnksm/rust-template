@@ -13,3 +13,10 @@ jobs:
     uses: gifnksm/rust-template/.github/workflows/reusable-cd.yml@main
     with:
       upload-dist-archive: {% if crate_type == "bin" %}true{% else %}false{% endif %}
+
+  cd-complete:
+    needs: cd
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "CD completed"
+        shell: bash
