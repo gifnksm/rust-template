@@ -17,6 +17,13 @@ jobs:
   cd-complete:
     needs: cd
     runs-on: ubuntu-latest
+    if: {{ "${{ always() }}" }}
     steps:
-      - run: echo "CD completed"
-        shell: bash
+      - run: |
+          if {{ "${{ needs.cd.result == 'success' }}" }}; then
+            echo "CD succeeded"
+            exit 0
+          else
+            echo "CD failed"
+            exit 1
+          fi
