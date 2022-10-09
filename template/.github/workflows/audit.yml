@@ -16,6 +16,13 @@ jobs:
   audit-complete:
     needs: audit
     runs-on: ubuntu-latest
+    if: {{ "${{ always() }}" }}
     steps:
-      - run: echo "Audit completed"
-        shell: bash
+      - run: |
+          if {{ "${{ needs.audit.result == 'success' }}" }}; then
+            echo "Audit succeeded"
+            exit 0
+          else
+            echo "Audit failed"
+            exit 1
+          fi

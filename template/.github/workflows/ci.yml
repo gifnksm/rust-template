@@ -16,6 +16,13 @@ jobs:
   ci-complete:
     needs: ci
     runs-on: ubuntu-latest
+    if: {{ "${{ always() }}" }}
     steps:
-      - run: echo "CI completed"
-        shell: bash
+      - run: |
+          if {{ "${{ needs.ci.result == 'success' }}" }}; then
+            echo "CI succeeded"
+            exit 0
+          else
+            echo "CI failed"
+            exit 1
+          fi
