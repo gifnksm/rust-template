@@ -19,11 +19,7 @@ jobs:
       PROJECT_NAME: rust-template-generated-${{ matrix.job.crate_type }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
+      - uses: dtolnay/rust-toolchain@stable
       - uses: taiki-e/install-action@v1
         with:
           tool: cargo-udeps,cargo-sync-rdme,cargo-generate
