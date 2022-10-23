@@ -3,7 +3,7 @@ members = ["xtask"]
 
 [package]
 name = "{{project-name}}"
-version = "0.1.0-alpha.0"
+version = "0.1.0"
 edition = "2021"
 rust-version = "{{rust-version}}"
 description = "{{project-description}}"
