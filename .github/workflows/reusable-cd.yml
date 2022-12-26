@@ -39,7 +39,7 @@ jobs:
           key: ${{ matrix.job.target }}
         if: ${{ inputs.upload-dist-archive }}
       - name: Install cross
-        uses: taiki-e/install-action@cross
+        uses: taiki-e/install-action@v2
         if: ${{ inputs.upload-dist-archive }}
 
       - name: cargo xtask dist

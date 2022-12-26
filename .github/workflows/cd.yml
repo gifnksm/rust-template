@@ -23,7 +23,7 @@ jobs:
       PROJECT_NAME: rust-template-generated-${{ matrix.job.crate_type }}
     steps:
       - uses: actions/checkout@v3
-      - uses: taiki-e/install-action@v1
+      - uses: taiki-e/install-action@v2
         with:
           tool: cargo-udeps,cargo-sync-rdme,cargo-generate
       - run: rustup toolchain add nightly --profile minimal
