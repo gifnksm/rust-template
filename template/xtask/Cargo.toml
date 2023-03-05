@@ -8,7 +8,7 @@ readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-cli-xtask = { version = "0.6.0", features = ["{{ crate_type }}-crate", "{{ crate_type }}-crate-extra", "main"] }
+cli-xtask = { version = "0.6", features = ["{{ crate_type }}-crate", "{{ crate_type }}-crate-extra", "main"] }
 {% if crate_type == "bin" -%}
 {{ project-name }} = { path = ".." }
 {%- endif %}
