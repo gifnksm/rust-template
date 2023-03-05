@@ -99,6 +99,8 @@ jobs:
           components: llvm-tools-preview
       - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov
       - run: cargo llvm-cov --workspace --all-features --lcov --output-path lcov.info
         shell: bash
       - uses: codecov/codecov-action@v3

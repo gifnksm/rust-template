@@ -40,6 +40,8 @@ jobs:
         if: ${{ inputs.upload-dist-archive }}
       - name: Install cross
         uses: taiki-e/install-action@v2
+        with:
+          tool: cross
         if: ${{ inputs.upload-dist-archive }}
 
       - name: cargo xtask dist
