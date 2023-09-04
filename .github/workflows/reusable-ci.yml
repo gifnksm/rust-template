@@ -25,6 +25,10 @@ on:
         required: false
         type: boolean
         default: true
+      fail-fast:
+        required: false
+        type: boolean
+        default: true
     outputs:
       rust:
         description: "Rust version"
@@ -67,7 +71,7 @@ jobs:
     needs: set-matrix
     if: ${{ inputs.run-test }}
     strategy:
-      fail-fast: false
+      fail-fast: ${{ inputs.fail-fast }}
       matrix:
         rust: ${{ fromJSON(needs.set-matrix.outputs.rust) }}
         os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
@@ -86,7 +90,7 @@ jobs:
     needs: set-matrix
     if: ${{ inputs.run-coverage }}
     strategy:
-      fail-fast: false
+      fail-fast:  ${{ inputs.fail-fast }}
       matrix:
         rust: [ stable ]
         os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
@@ -114,7 +118,7 @@ jobs:
     needs: set-matrix
     if: ${{ inputs.run-build }}
     strategy:
-      fail-fast: false
+      fail-fast: ${{ inputs.fail-fast }}
       matrix:
         rust: ${{ fromJSON(needs.set-matrix.outputs.rust) }}
         os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
@@ -133,7 +137,7 @@ jobs:
     needs: set-matrix
     if: ${{ inputs.run-lint }}
     strategy:
-      fail-fast: false
+      fail-fast: ${{ inputs.fail-fast }}
       matrix:
         os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
     runs-on: ${{ matrix.os }}

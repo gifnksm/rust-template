@@ -4,6 +4,10 @@ on:
       upload-dist-archive:
         required: true
         type: boolean
+      fail-fast:
+        required: false
+        type: boolean
+        default: true
 
 env:
   CARGO_TERM_COLOR: always
@@ -13,7 +17,7 @@ jobs:
     name: Publishing for ${{ matrix.job.target }}
     runs-on: ${{ matrix.job.os }}
     strategy:
-      fail-fast: false
+      fail-fast: ${{ inputs.fail-fast }}
       matrix:
         rust: [stable]
         job:
