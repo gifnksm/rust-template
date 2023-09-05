@@ -47,7 +47,7 @@ jobs:
       rust: ${{ steps.set-values.outputs.rust }}
       os: ${{ steps.set-values.outputs.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Set matrix values
@@ -77,7 +77,7 @@ jobs:
         os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
@@ -96,7 +96,7 @@ jobs:
         os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
@@ -124,7 +124,7 @@ jobs:
         os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
@@ -142,7 +142,7 @@ jobs:
         os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt,clippy
@@ -160,7 +160,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ inputs.run-release-dry-run }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@v2
@@ -175,7 +175,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ inputs.run-actionlint }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Check workflow files
         run: |
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)

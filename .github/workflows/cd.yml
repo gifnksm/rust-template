@@ -22,7 +22,7 @@ jobs:
     env:
       PROJECT_NAME: rust-template-generated-${{ matrix.job.crate_type }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-udeps,cargo-sync-rdme,cargo-generate
@@ -54,7 +54,7 @@ jobs:
         if: ${{ matrix.job.crate_type == 'lib' }}
 
       - name: Checkout example repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: gifnksm/${{ env.PROJECT_NAME }}
           path: example_repo
