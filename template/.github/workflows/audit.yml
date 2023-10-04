@@ -13,6 +13,8 @@ on:
 jobs:
   audit:
     uses: gifnksm/rust-template/.github/workflows/reusable-audit.yml@main
+    permissions:
+      issues: write
 
   audit-complete:
     needs: audit
