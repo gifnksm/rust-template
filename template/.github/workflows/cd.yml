@@ -14,6 +14,8 @@ jobs:
     uses: gifnksm/rust-template/.github/workflows/reusable-cd.yml@main
     with:
       upload-dist-archive: {% if crate_type == "bin" %}true{% else %}false{% endif %}
+      permissions:
+        contents: write
 
   cd-complete:
     needs: cd
