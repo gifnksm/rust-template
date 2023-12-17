@@ -58,6 +58,7 @@ jobs:
       - name: Upload binaries as artifacts
         uses: actions/upload-artifact@v4
         with:
+          name: artifact-${{ matrix.job.target }}
           path: target/dist/*
         if: ${{ inputs.upload-dist-archive }}
 
