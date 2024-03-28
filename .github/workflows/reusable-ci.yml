@@ -107,7 +107,7 @@ jobs:
           tool: cargo-llvm-cov
       - run: cargo llvm-cov --workspace --all-features --codecov --output-path codecov.json
         shell: bash
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: codecov.json
