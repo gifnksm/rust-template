@@ -7,20 +7,10 @@ updates:
   - package-ecosystem: "cargo"
     directory: "/"
     allow:
-      - dependency-type: "direct"
+      - dependency-type: "all"
     schedule:
       interval: "weekly"
     groups:
-      cargo-direct-patch:
+      cargo-patch:
         update-types:
           - "patch"
-  - package-ecosystem: "cargo"
-    directory: "/"
-    allow:
-      - dependency-type: "indirect"
-    schedule:
-      interval: "weekly"
-    groups:
-      cargo-indirect:
-        patterns:
-          - "*"
