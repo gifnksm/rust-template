@@ -11,6 +11,13 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      patch-only:
+      cargo-transitive:
+        dependency-type: "indirect"
+        patterns:
+          - "*"
+      cargo-direct-patch:
+        dependency-type: "direct"
         update-types:
           - "patch"
+        patterns:
+          - "*"
