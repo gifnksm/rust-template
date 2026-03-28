@@ -1,6 +1,9 @@
 [hooks]
 post = ["post-script.rhai"]
 
+[template]
+exclude = [".github/workflows/*.yml"]
+
 [conditional.'crate_type == "lib"']
 ignore = [ "src/main.rs" ]
 
@@ -24,3 +27,4 @@ type = "string"
 prompt = "Minimum supported Rust version (MSRV)"
 regex = "^\\d+\\.\\d+\\.\\d+$"
 default = "1.85.0"
+
