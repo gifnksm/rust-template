@@ -2,10 +2,10 @@
 post = ["post-script.rhai"]
 
 [template]
-exclude = [".github/workflows/*.yml"]
+exclude = [".github/workflows/*.yml", "justfile"]
 
 [conditional.'crate_type == "lib"']
-ignore = [ "src/main.rs" ]
+ignore = [ ".cargo/config.toml", "src/main.rs", "xtask" ]
 
 [placeholders.project-description]
 type = "string"
@@ -28,3 +28,8 @@ prompt = "Minimum supported Rust version (MSRV)"
 regex = "^\\d+\\.\\d+\\.\\d+$"
 default = "1.85.0"
 
+[placeholders.edition]
+type = "string"
+prompt = "Rust Edition"
+regex = "^\\d+"
+default = "2024"

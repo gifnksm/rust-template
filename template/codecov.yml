@@ -6,5 +6,7 @@ coverage:
     patch:
       default:
         informational: true
+{% if crate_type == "bin" -%}
 ignore:
   - xtask
+{%- endif %}

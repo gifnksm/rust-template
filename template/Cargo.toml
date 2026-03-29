@@ -1,14 +1,16 @@
+{% if crate_type == "bin" -%}
 [workspace]
 members = ["xtask"]
 
+{% endif -%}
 [package]
-name = "{{project-name}}"
+name = "{{ project-name }}"
 version = "0.1.0"
-edition = "2024"
-rust-version = "{{rust-version}}"
-description = "{{project-description}}"
+edition = "{{ edition }}"
+rust-version = "{{ rust-version }}"
+description = "{{ project-description }}"
 readme = "README.md"
-repository = "https://github.com/{{gh-username}}/{{project-name}}"
+repository = "https://github.com/{{ gh-username }}/{{ project-name }}"
 license = "MIT OR Apache-2.0"
 keywords = []
 categories = []
@@ -35,7 +37,8 @@ pkg-fmt = "tgz"
 [dependencies]
 {% if crate_type == "bin" -%}
 clap = { version = "4.6", features = ["derive"] }
-{% endif %}
+
+{% endif -%}
 [dev-dependencies]
 [build-dependencies]
 
@@ -46,4 +49,4 @@ clap = { version = "4.6", features = ["derive"] }
 strip = true
 {% endif %}
 [badges]
-maintenance = { status = "{{maintenance-status}}" }
+maintenance = { status = "{{ maintenance-status }}" }

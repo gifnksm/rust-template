@@ -10,5 +10,5 @@ if crate_type == "bin" {
   abort("unknown crate_type");
 }
 
-system::command("cargo", ["xtask", "tidy", "--exhaustive", "--allow-dirty", "--allow-no-vcs"])
+system::command("just", ["sync-rdme-all", "--allow-dirty", "--allow-no-vcs"])
 

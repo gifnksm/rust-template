@@ -1,8 +1,9 @@
 {%- if crate_type == "bin" -%}
 use cli_xtask::{
+    Result, Xtask,
     clap::CommandFactory,
     config::{ConfigBuilder, DistConfigBuilder},
-    workspace, Result, Xtask,
+    workspace,
 };
 
 fn main() -> Result<()> {
