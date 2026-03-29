@@ -16,9 +16,7 @@ bin | lib) ;;
   ;;
 esac
 
-cargo xtask build --exhaustive -- --all-targets
-cargo xtask test --exhaustive
-cargo xtask lint --exhaustive
+just ci
 if [[ "${crate_type}" == "bin" ]]; then
   cargo xtask dist
 fi

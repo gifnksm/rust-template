@@ -1,14 +1,22 @@
 [package]
 name = "xtask"
 version = "0.1.0"
-edition = "2021"
+edition = "{{ edition }}"
 publish = false
 readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-cli-xtask = { version = "0.10", features = ["{{ crate_type }}-crate", "{{ crate_type }}-crate-extra", "main"] }
-{% if crate_type == "bin" -%}
+cli-xtask = { version = "0.10", features = [
+  "subcommand-dist-build-bin",
+  "subcommand-dist-build-completion",
+  "subcommand-dist-build-doc",
+  "subcommand-dist-build-license",
+  "subcommand-dist-build-man",
+  "subcommand-dist-build-readme",
+  "subcommand-dist-clean",
+  "subcommand-dist",
+  "main"
+] }
 {{ project-name }} = { path = ".." }
-{%- endif %}
