@@ -5,7 +5,7 @@ post = ["post-script.rhai"]
 exclude = [".github/workflows/*.yml", "justfile"]
 
 [conditional.'crate_type == "lib"']
-ignore = [ ".cargo/config.toml", "src/main.rs", "xtask" ]
+ignore = [ "src/main.rs" ]
 
 [placeholders.project-description]
 type = "string"
