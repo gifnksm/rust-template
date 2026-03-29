@@ -18,5 +18,5 @@ esac
 
 just ci
 if [[ "${crate_type}" == "bin" ]]; then
-  cargo xtask dist
+  ./scripts/build-dist
 fi
