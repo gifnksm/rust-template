@@ -12,6 +12,7 @@ concurrency:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -38,6 +39,7 @@ jobs:
           ../tests/scripts/run_cargo_tests "${{ matrix.job.crate_type }}"
 
   actionlint:
+    name: actionlint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -47,3 +49,34 @@ jobs:
           echo "::add-matcher::.github/actionlint-matcher.json"
           ./actionlint -color
         shell: bash
+
+  typos:
+    name: Typos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: typos
+      - name: Check spelling of entire workspace
+        run: typos
+
+  ci-complete:
+    needs:
+      - build
+      - actionlint
+      - typos
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    permissions: {}
+    steps:
+      - name: CI complete
+        run: |
+          if ${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}; then
+            echo "CI succeeded"
+          else
+            echo "CI failed"
+            exit 1
+          fi
+        shell: bash
+
