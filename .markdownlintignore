@@ -1,0 +1,6 @@
+/target
+/template
+/tests/out.bin/
+/tests/out.lib/
+/tests/repo.bin/
+/tests/repo.lib/
