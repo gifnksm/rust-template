@@ -28,7 +28,10 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: taiki-e/install-action@v2
         with:
-          tool: cargo-generate,just,cargo-hack,cargo-docs-rs,cargo-sync-rdme,cargo-machete,cargo-llvm-cov
+          tool: cargo-generate,just,cargo-hack,cargo-docs-rs,cargo-sync-rdme,cargo-machete,cargo-llvm-cov,typos
+      - name: Install actionlint
+        run: bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) && sudo mv actionlint /usr/local/bin/
+        shell: bash
       - run: rustup toolchain add nightly --profile minimal
         shell: bash
       - run: cargo generate --name "${{ env.PROJECT_NAME }}" --path "template" --template-values-file tests/template_values.toml --${{matrix.job.crate_type}} --allow-commands
@@ -61,11 +64,19 @@ jobs:
       - name: Check spelling of entire workspace
         run: typos
 
+  markdownlint:
+    name: Markdownlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: npx markdownlint-cli .
+
   ci-complete:
     needs:
       - build
       - actionlint
       - typos
+      - markdownlint
     runs-on: ubuntu-latest
     if: ${{ always() }}
     permissions: {}

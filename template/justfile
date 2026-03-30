@@ -66,8 +66,20 @@ sync-rdme-all *args:
 machete *args:
     cargo machete {{ args }}
 
+# Check workflow files.
+actionlint *args:
+    actionlint {{ args }}
+
+# Check spelling of entire workspace.
+typos *args:
+    typos {{ args }}
+
+# Lint markdown files.
+markdownlint *args:
+    npx markdownlint-cli {{ args }} .
+
 # Run all CI-equivalent checks.
-ci: ci-rustfmt ci-check ci-clippy ci-rustdoc ci-docs-rs ci-sync-rdme ci-machete ci-test ci-coverage
+ci: ci-rustfmt ci-check ci-clippy ci-rustdoc ci-docs-rs ci-sync-rdme ci-machete ci-test ci-coverage ci-actionlint ci-typos ci-markdownlint
 
 # CI: formatting must be clean.
 ci-rustfmt:
@@ -98,6 +110,18 @@ ci-sync-rdme:
 # CI: dependency hygiene.
 ci-machete:
     just machete
+
+# CI: check workflow files.
+ci-actionlint:
+    just actionlint
+
+# CI: check spelling.
+ci-typos:
+    just typos
+
+# CI: lint markdown files.
+ci-markdownlint:
+    just markdownlint
 
 # CI: test suite.
 ci-test:
