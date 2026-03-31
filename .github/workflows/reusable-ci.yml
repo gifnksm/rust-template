@@ -43,6 +43,8 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+permissions: {}
+
 jobs:
   set-matrix:
     runs-on: ubuntu-latest
