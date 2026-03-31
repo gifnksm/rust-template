@@ -12,6 +12,8 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+permissions: {}
+
 jobs:
   release:
     name: Publishing for ${{ matrix.job.target }}
