@@ -19,6 +19,56 @@ die() {
     exit 1
 }
 
+require_file() {
+    local path="$1"
+    local description="$2"
+
+    if [[ ! -f "${path}" ]]; then
+        die "${description} was not generated: ${path}"
+    fi
+    if [[ ! -s "${path}" ]]; then
+        die "${description} is empty: ${path}"
+    fi
+}
+
+require_completion_file() {
+    local shell_name="$1"
+    local path="$2"
+
+    require_file "${path}" "${shell_name} completion"
+
+    case "${shell_name}" in
+    bash)
+        grep -Fq 'complete ' "${path}" || die "bash completion looks invalid: ${path}"
+        ;;
+    elvish)
+        grep -Fq 'edit:completion:arg-completer[' "${path}" || die "elvish completion looks invalid: ${path}"
+        ;;
+    fish)
+        grep -Fq 'complete -c ' "${path}" || die "fish completion looks invalid: ${path}"
+        ;;
+    powershell)
+        grep -Fq 'Register-ArgumentCompleter' "${path}" || die "powershell completion looks invalid: ${path}"
+        ;;
+    zsh)
+        grep -Fq '#compdef ' "${path}" || die "zsh completion looks invalid: ${path}"
+        ;;
+    nushell)
+        grep -Fq 'export extern ' "${path}" || die "nushell completion looks invalid: ${path}"
+        ;;
+    *)
+        die "unknown shell for completion validation: ${shell_name}"
+        ;;
+    esac
+}
+
+require_man_file() {
+    local path="$1"
+
+    require_file "${path}" "man page"
+    grep -Fq '.TH ' "${path}" || die "man page looks invalid: ${path}"
+}
+
 require_package() {
     local metadata_json="$1"
     local pkg="$2"
@@ -148,14 +198,21 @@ main() {
 
             mkdir -p "${BUILD_DIR}/completion"
             env "${env_prefix}_COMPLETE=bash" "${cargo_run[@]}" >"${BUILD_DIR}/completion/${bin_name}.bash"
+            require_completion_file bash "${BUILD_DIR}/completion/${bin_name}.bash"
             env "${env_prefix}_COMPLETE=elvish" "${cargo_run[@]}" >"${BUILD_DIR}/completion/${bin_name}.elv"
+            require_completion_file elvish "${BUILD_DIR}/completion/${bin_name}.elv"
             env "${env_prefix}_COMPLETE=fish" "${cargo_run[@]}" >"${BUILD_DIR}/completion/${bin_name}.fish"
+            require_completion_file fish "${BUILD_DIR}/completion/${bin_name}.fish"
             env "${env_prefix}_COMPLETE=powershell" "${cargo_run[@]}" >"${BUILD_DIR}/completion/_${bin_name}.ps1"
+            require_completion_file powershell "${BUILD_DIR}/completion/_${bin_name}.ps1"
             env "${env_prefix}_COMPLETE=zsh" "${cargo_run[@]}" >"${BUILD_DIR}/completion/_${bin_name}"
+            require_completion_file zsh "${BUILD_DIR}/completion/_${bin_name}"
             env "${env_prefix}_COMPLETE=nushell" "${cargo_run[@]}" >"${BUILD_DIR}/completion/${bin_name}.nu"
+            require_completion_file nushell "${BUILD_DIR}/completion/${bin_name}.nu"
 
             mkdir -p "${BUILD_DIR}/man"
             env "${env_prefix}_GENERATE_MAN_TO=${BUILD_DIR}/man" "${cargo_run[@]}"
+            require_man_file "${BUILD_DIR}/man/${bin_name}.1"
         done
     done
 
