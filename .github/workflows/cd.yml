@@ -58,8 +58,8 @@ jobs:
           {
             echo 'SSH_KEY<<EOF'
             echo "${{ secrets.GH_EXAMPLE_DEPLOY_LIB_SECRET }}"
+            echo 'EOF'
           } >> "${GITHUB_ENV}"
-          echo 'EOF' >> "${GITHUB_ENV}"
         if: ${{ matrix.job.crate_type == 'lib' }}
 
       - name: Checkout example repo
