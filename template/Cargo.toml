@@ -18,7 +18,9 @@ style = "flat-square"
 maintenance = true
 license = { link = "#license" }
 crates-io = true
+{%- if crate_type == "lib" %}
 docs-rs = true
+{%- endif %}
 rust-version = true
 github-actions = { workflows = "ci.yml" }
 codecov = true

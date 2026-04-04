@@ -2,10 +2,13 @@
 post = ["post-script.rhai"]
 
 [template]
-exclude = [".github/workflows/*.yml", "justfile"]
+exclude = [".github/workflows/*.yml", "justfile.*"]
 
 [conditional.'crate_type == "lib"']
 ignore = [ "src/main.rs", "scripts/build-dist" ]
+
+[conditional.'crate_type == "bin"']
+ignore = [ "src/lib.rs" ]
 
 [placeholders.project-description]
 type = "string"
