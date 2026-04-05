@@ -71,7 +71,7 @@ jobs:
 
       - name: update example
         run: |
-          ./tests/scripts/update_repo example_repo ${{ env.PROJECT_NAME }}
+          ./tests/scripts/update_repo ${{ matrix.job.crate_type }} example_repo ${{ env.PROJECT_NAME }}
           git -C example_repo add -N .
 
       - name: test example
