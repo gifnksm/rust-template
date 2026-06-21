@@ -38,6 +38,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - uses: EmbarkStudios/cargo-deny-action@v2
         with:
+          rust-version: stable
           command: check advisories
 
   cargo-deny-policy:
@@ -48,6 +49,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - uses: EmbarkStudios/cargo-deny-action@v2
         with:
+          rust-version: stable
           command: check bans licenses sources
 
   audit-complete:
