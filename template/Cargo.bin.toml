@@ -18,35 +18,23 @@ style = "flat-square"
 maintenance = true
 license = { link = "#license" }
 crates-io = true
-{%- if crate_type == "lib" %}
-docs-rs = true
-{%- endif %}
 rust-version = true
 github-actions = { workflows = "ci.yml" }
 codecov = true
-{% if crate_type == "bin" -%}
 
 [package.metadata.binstall]
 pkg-url = "{ repo }/releases/download/v{ version }/{ name }-v{ version }-{ target }.{ archive-format }"
 bin-dir = "{ bin }{ binary-ext }"
 pkg-fmt = "tgz"
-{% endif %}
+
 [dependencies]
-{% if crate_type == "bin" -%}
 clap = { version = "4.6", features = ["derive"] }
 clap_complete = "4.6"
 clap_complete_nushell = "4.6"
 clap_mangen = "0.3"
 
-{% endif -%}
-[dev-dependencies]
-[build-dependencies]
-
-[profile.dev]
-
-[profile.release]
-{% if crate_type == "bin" -%}
-strip = true
-{% endif %}
 [badges]
 maintenance = { status = "{{ maintenance-status }}" }
+
+[profile.release]
+strip = true

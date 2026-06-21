@@ -5,10 +5,10 @@ post = ["post-script.rhai"]
 exclude = [".github/workflows/*.yml", "justfile.*"]
 
 [conditional.'crate_type == "lib"']
-ignore = [ "src/main.rs", "scripts/build-dist", "about.toml", "about.hbs" ]
+ignore = ["src/main.rs", "scripts/build-dist", "about.toml", "about.hbs"]
 
 [conditional.'crate_type == "bin"']
-ignore = [ "src/lib.rs" ]
+ignore = ["src/lib.rs"]
 
 [placeholders.project-description]
 type = "string"
@@ -22,7 +22,15 @@ regex = "^[A-Za-z0-9][A-Za-z0-9-]{0,38}$"
 [placeholders.maintenance-status]
 type = "string"
 prompt = "Maintenance status"
-choices = ["actively-developed", "passively-maintained", "as-is", "experimental", "looking-for-maintainer", "deprecated", "none"]
+choices = [
+  "actively-developed",
+  "passively-maintained",
+  "as-is",
+  "experimental",
+  "looking-for-maintainer",
+  "deprecated",
+  "none"
+]
 default = "none"
 
 [placeholders.rust-version]
