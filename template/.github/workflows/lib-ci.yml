@@ -303,6 +303,20 @@ jobs:
       - uses: editorconfig-checker/action-editorconfig-checker@v2
       - run: just ci-editorconfig -format github-actions
 
+  tombi:
+    name: Tombi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v6
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just
+      - run: just ci-tombi-format
+        shell: bash
+      - run: just ci-tombi-lint
+        shell: bash
+
   ci-complete:
     needs:
       - set-matrix
@@ -320,6 +334,7 @@ jobs:
       - typos
       - markdownlint
       - editorconfig
+      - tombi
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:

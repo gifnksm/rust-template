@@ -82,8 +82,16 @@ markdownlint *args:
 editorconfig *args:
     editorconfig-checker {{ args }}
 
+# Format TOML files.
+tombi-format *args:
+    uvx tombi format {{ args }}
+
+# Lint TOML files.
+tombi-lint *args:
+    uvx tombi lint {{ args }}
+
 # Run lint and static checks used for day-to-day local verification.
-ci-lint: ci-rustfmt ci-check ci-clippy ci-machete ci-actionlint ci-typos ci-markdownlint ci-editorconfig
+ci-lint: ci-rustfmt ci-check ci-clippy ci-machete ci-actionlint ci-typos ci-markdownlint ci-editorconfig ci-tombi-format ci-tombi-lint
 
 # Run all CI-equivalent checks.
 ci: ci-lint ci-rustdoc ci-docs-rs ci-sync-rdme ci-test ci-coverage
@@ -133,6 +141,14 @@ ci-markdownlint:
 # CI: check EditorConfig compliance.
 ci-editorconfig *args:
     just editorconfig {{ args }}
+
+# CI: TOML formatting must be clean.
+ci-tombi-format:
+    just tombi-format --check
+
+# CI: TOML lint must be clean.
+ci-tombi-lint:
+    just tombi-lint --error-on-warnings
 
 # CI: test suite.
 ci-test:
