@@ -30,7 +30,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: taiki-e/install-action@v2
         with:
-          tool: cargo-generate,just,cargo-hack,cargo-docs-rs,cargo-sync-rdme,cargo-machete,cargo-llvm-cov,typos
+          tool: cargo-generate,just,cargo-hack,cargo-docs-rs,cargo-sync-rdme,cargo-machete,cargo-llvm-cov,typos,cargo-about
       - name: Install actionlint
         run: bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) && sudo mv actionlint /usr/local/bin/
         shell: bash
@@ -91,4 +91,3 @@ jobs:
             exit 1
           fi
         shell: bash
-

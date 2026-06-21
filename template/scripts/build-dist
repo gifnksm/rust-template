@@ -162,6 +162,7 @@ main() {
 
     cp README.md "${BUILD_DIR}"
     cp LICENSE-* "${BUILD_DIR}"
+    cargo about generate about.hbs --output-file "${BUILD_DIR}/THIRD_PARTY_LICENSES.html" --target "${target_triple}"
 
     for pkg in "${DIST_PACKAGES[@]}"; do
         local -a bin_names=()
