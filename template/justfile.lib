@@ -78,8 +78,12 @@ typos *args:
 markdownlint *args:
     npx markdownlint-cli {{ args }} .
 
+# Check EditorConfig compliance.
+editorconfig *args:
+    editorconfig-checker {{ args }}
+
 # Run lint and static checks used for day-to-day local verification.
-ci-lint: ci-rustfmt ci-check ci-clippy ci-machete ci-actionlint ci-typos ci-markdownlint
+ci-lint: ci-rustfmt ci-check ci-clippy ci-machete ci-actionlint ci-typos ci-markdownlint ci-editorconfig
 
 # Run all CI-equivalent checks.
 ci: ci-lint ci-rustdoc ci-docs-rs ci-sync-rdme ci-test ci-coverage
@@ -125,6 +129,10 @@ ci-typos:
 # CI: lint markdown files.
 ci-markdownlint:
     just markdownlint
+
+# CI: check EditorConfig compliance.
+ci-editorconfig *args:
+    just editorconfig {{ args }}
 
 # CI: test suite.
 ci-test:

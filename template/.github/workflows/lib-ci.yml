@@ -292,6 +292,17 @@ jobs:
           tool: just
       - run: just ci-markdownlint
 
+  editorconfig:
+    name: EditorConfig
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just
+      - uses: editorconfig-checker/action-editorconfig-checker@v2
+      - run: just ci-editorconfig -format github-actions
+
   ci-complete:
     needs:
       - set-matrix
@@ -308,6 +319,7 @@ jobs:
       - actionlint
       - typos
       - markdownlint
+      - editorconfig
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
