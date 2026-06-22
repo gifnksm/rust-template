@@ -31,7 +31,7 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-generate,just,cargo-hack,cargo-docs-rs,cargo-sync-rdme,cargo-machete,cargo-llvm-cov,typos,cargo-about
-      - uses: editorconfig-checker/action-editorconfig-checker@v2
+      - uses: editorconfig-checker/action-editorconfig-checker@v2.2.0
       - uses: astral-sh/setup-uv@v8.2.0
       - name: Install actionlint
         run: bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) && sudo mv actionlint /usr/local/bin/
@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: editorconfig-checker/action-editorconfig-checker@v2
+      - uses: editorconfig-checker/action-editorconfig-checker@v2.2.0
       - run: editorconfig-checker -format github-actions
 
   ci-complete:
