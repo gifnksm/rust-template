@@ -9,7 +9,7 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 [*.rs]
-indent_size = unset
+indent_size = 4
 
 [*.{toml,json}]
 indent_size = 2
