@@ -56,7 +56,7 @@ doc-all *args:
 
 # Synchronize README snippets for all packages.
 sync-rdme-all *args:
-    rustup run nightly cargo hack sync-rdme --workspace {{ args }}
+    cargo hack sync-rdme --toolchain nightly --workspace {{ args }}
 
 # Detect unused dependencies.
 machete *args:
