@@ -1,13 +1,4 @@
 //! {{ project-description }}
-//!
-//! # Usage
-//!
-//! Add this to your `Cargo.toml`:
-//!
-//! ```toml
-//! [dependencies]
-//! {{ project-name }} = "0.1.0"
-//! ```
 
 #![doc(html_root_url = "https://docs.rs/{{project-name}}/0.1.0")]
 
