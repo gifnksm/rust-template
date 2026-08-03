@@ -252,7 +252,9 @@ jobs:
       - name: Install actionlint
         run: bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) && sudo mv actionlint /usr/local/bin/
         shell: bash
-      - run: just ci-actionlint
+      - run: |
+          echo "::add-matcher::.github/actionlint-matcher.json"
+          just ci-actionlint
 
   typos:
     name: Typos
