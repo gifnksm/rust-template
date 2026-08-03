@@ -23,5 +23,10 @@ rust-version = true
 github-actions = { workflows = "ci.yml" }
 codecov = true
 
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
+
 [badges]
 maintenance = { status = "{{ maintenance-status }}" }
