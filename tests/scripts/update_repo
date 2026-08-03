@@ -17,7 +17,6 @@ find "${output_path}" -mindepth 1 -maxdepth 1 -not -name .git -a -not -name CHAN
 if [[ "${crate_type}" == "lib" ]]; then
     perl -i -pe 's@(?<=^rust-template-generated-... = ").*(?="$)@'"${released_version}"'@' "${repo_path}/README.md"
     perl -i -pe 's@(?<=^//! rust-template-generated-... = ").*(?="$)@'"${released_version}"'@' "${repo_path}/src/lib.rs"
-    perl -i -pe 's@(?<=^#!\[doc\(html_root_url = "https://docs.rs/rust-template-generated-.../).*(?="\)\]$)@'"${released_version}"'@' "${repo_path}/src/lib.rs"
 fi
 
 perl -i -pe 's@(?<=^version = ").*(?="$)@'"${pkg_version}"'@' "${repo_path}/Cargo.toml"

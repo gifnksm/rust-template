@@ -1,7 +1,5 @@
 //! {{ project-description }}
 
-#![doc(html_root_url = "https://docs.rs/{{project-name}}/0.1.0")]
-
 #[cfg(test)]
 mod tests {
     #[test]
