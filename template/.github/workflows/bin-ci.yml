@@ -235,9 +235,11 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
       - uses: Swatinem/rust-cache@v2
+      - run: rustup toolchain install nightly --profile minimal
+        shell: bash
       - uses: taiki-e/install-action@v2
         with:
-          tool: cargo-release,just
+          tool: cargo-release,just,cargo-hack,cargo-sync-rdme
       - run: cargo release patch -vv --allow-branch '*'
         shell: bash
 

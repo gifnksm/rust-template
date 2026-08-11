@@ -161,8 +161,5 @@ ci-coverage:
 
 # Pre-release gate is equivalent to full CI.
 pre-release:
-    if [ -n "${GITHUB_ACTIONS:-}" ]; then \
-        echo "Skip pre-release CI on GitHub Actions (GITHUB_ACTIONS=${GITHUB_ACTIONS})"; \
-    else \
-        just ci; \
-    fi
+    just sync-rdme-all --allow-dirty
+    if [ -z "${GITHUB_ACTIONS:-}" ]; then just ci; fi
