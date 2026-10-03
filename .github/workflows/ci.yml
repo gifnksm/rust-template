@@ -47,8 +47,8 @@ jobs:
           cd "${PROJECT_NAME}"
           ../tests/scripts/run_cargo_tests "${{ matrix.job.crate_type }}"
 
-  actionlint:
-    name: Actionlint
+  lint-workflow:
+    name: Lint (workflow)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -59,8 +59,8 @@ jobs:
           ./actionlint -color
         shell: bash
 
-  typos:
-    name: Typos
+  lint-spelling:
+    name: Lint (spelling)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -70,15 +70,15 @@ jobs:
       - name: Check spelling of entire workspace
         run: typos
 
-  markdownlint:
-    name: Markdownlint
+  lint-markdown:
+    name: Lint (markdown)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: npx markdownlint-cli .
 
-  editorconfig:
-    name: EditorConfig
+  lint-editorconfig:
+    name: Lint (editorconfig)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -88,10 +88,10 @@ jobs:
   ci-complete:
     needs:
       - build
-      - actionlint
-      - typos
-      - markdownlint
-      - editorconfig
+      - lint-workflow
+      - lint-spelling
+      - lint-markdown
+      - lint-editorconfig
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:

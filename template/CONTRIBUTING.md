@@ -59,21 +59,12 @@ cargo test
 
 ### Useful Commands
 
-- Run lint and static checks during development:
-
-  ```console
-  just ci-lint
-  ```
-
-  `just ci-lint` relies on additional tools such as `just`, `cargo-hack`,
-  `cargo-machete`, `actionlint`, `typos`, and Node.js (providing `node`/`npx`
-  for `markdownlint-cli`).
-
 - Run the full CI-equivalent suite, including docs and tests, before opening or updating a pull request:
 
   ```console
   just ci
   ```
+
 {%- if crate_type == "bin" %}
 
 - Build and run release version:
@@ -81,6 +72,7 @@ cargo test
   ```console
   cargo build --release && cargo run --release
   ```
+
 {%- endif %}
 
 See `just --list` for more commands.
