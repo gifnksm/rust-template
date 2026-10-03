@@ -2,21 +2,14 @@
 
 set -eux
 
-crate_type="$1"
-repo_path="$2"
-output_path="$3"
+repo_path="$1"
+output_path="$2"
 
-pkg_version="$(sed -n 's/^version = "\(.*\)"$/\1/p' "${repo_path}/Cargo.toml")"
-if [[ "${crate_type}" == "lib" ]]; then
-    released_version="$(sed -n 's@^//! rust-template-generated-... = "\(.*\)"$@\1@p' "${repo_path}/src/lib.rs")"
-fi
+# Preserve the cloned repo's current package version. Generated output always
+# starts from 0.1.0, but the example repos are released independently.
+repo_pkg_version="$(sed -n 's/^version = "\(.*\)"$/\1/p' "${repo_path}/Cargo.toml")"
 
 find "${repo_path}" -mindepth 1 -maxdepth 1 -not -name .git -a -not -name CHANGELOG.md -exec rm -rf {} \;
 find "${output_path}" -mindepth 1 -maxdepth 1 -not -name .git -a -not -name CHANGELOG.md -exec cp -r {} "${repo_path}" \;
 
-if [[ "${crate_type}" == "lib" ]]; then
-    perl -i -pe 's@(?<=^rust-template-generated-... = ").*(?="$)@'"${released_version}"'@' "${repo_path}/README.md"
-    perl -i -pe 's@(?<=^//! rust-template-generated-... = ").*(?="$)@'"${released_version}"'@' "${repo_path}/src/lib.rs"
-fi
-
-perl -i -pe 's@(?<=^version = ").*(?="$)@'"${pkg_version}"'@' "${repo_path}/Cargo.toml"
+perl -i -pe 's@(?<=^version = ").*(?="$)@'"${repo_pkg_version}"'@' "${repo_path}/Cargo.toml"
