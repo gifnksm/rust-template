@@ -28,8 +28,8 @@ jobs:
     env:
       PROJECT_NAME: rust-template-generated-${{ matrix.job.crate_type }}
     steps:
-      - uses: actions/checkout@v7
-      - uses: taiki-e/install-action@v2
+      - uses: actions/checkout@v7.0.1
+      - uses: taiki-e/install-action@v2.87.22
         with:
           tool: cargo-generate,just,cargo-hack,cargo-docs-rs,cargo-sync-rdme,cargo-machete,cargo-llvm-cov,typos,cargo-about
       - uses: editorconfig-checker/action-editorconfig-checker@v3.0.0
@@ -65,7 +65,7 @@ jobs:
         if: ${{ matrix.job.crate_type == 'lib' }}
 
       - name: Checkout example repo
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           repository: gifnksm/${{ env.PROJECT_NAME }}
           path: example_repo
