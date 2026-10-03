@@ -28,12 +28,12 @@ jobs:
     env:
       PROJECT_NAME: rust-template-generated-${{ matrix.job.crate_type }}
     steps:
-      - uses: actions/checkout@v7.0.1
-      - uses: taiki-e/install-action@v2.87.22
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
         with:
           tool: cargo-generate,just,cargo-hack,cargo-docs-rs,cargo-sync-rdme,cargo-machete,cargo-llvm-cov,typos,cargo-about
-      - uses: editorconfig-checker/action-editorconfig-checker@v3.0.0
-      - uses: astral-sh/setup-uv@v10.2.0
+      - uses: editorconfig-checker/action-editorconfig-checker@51f63319f592f97930c73d9c46184d20bd206393 # v3.0.0
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
       - name: Install actionlint
         run: bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) && sudo mv actionlint /usr/local/bin/
         shell: bash
@@ -65,7 +65,7 @@ jobs:
         if: ${{ matrix.job.crate_type == 'lib' }}
 
       - name: Checkout example repo
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: gifnksm/${{ env.PROJECT_NAME }}
           path: example_repo
