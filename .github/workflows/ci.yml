@@ -30,19 +30,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: stable
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: cargo-generate,just,cargo-hack,cargo-docs-rs,cargo-sync-rdme,cargo-machete,cargo-llvm-cov,typos,cargo-about
-      - uses: editorconfig-checker/action-editorconfig-checker@51f63319f592f97930c73d9c46184d20bd206393 # v3.0.0
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-      - uses: rvben/rumdl@9c4cc2a2ebe176de68e1788106e25af8a9bd3899 # v0.2.78
-        with:
-          install-only: true
-      - name: Install actionlint
-        run: bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) && sudo mv actionlint /usr/local/bin/
-        shell: bash
       - run: rustup toolchain add nightly --profile minimal
         shell: bash
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
       - run: cargo generate --name "${{ env.PROJECT_NAME }}" --path "template" --template-values-file tests/template_values.toml --${{matrix.job.crate_type}} --allow-commands
         shell: bash
       - name: Cargo check
@@ -55,11 +45,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Check workflow files
-        run: |
-          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-          echo "::add-matcher::.github/actionlint-matcher.json"
-          ./actionlint -color
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - run: mise run ci:lint-workflow
         shell: bash
 
   lint-spelling:
@@ -67,29 +54,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: typos
-      - name: Check spelling of entire workspace
-        run: typos
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - run: mise run ci:lint-spelling
+        shell: bash
 
   lint-markdown:
     name: Lint (markdown)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: rvben/rumdl@9c4cc2a2ebe176de68e1788106e25af8a9bd3899 # v0.2.78
-        with:
-          install-only: true
-      - run: rumdl check
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - run: mise run ci:lint-markdown
+        shell: bash
 
   lint-editorconfig:
     name: Lint (editorconfig)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: editorconfig-checker/action-editorconfig-checker@51f63319f592f97930c73d9c46184d20bd206393 # v3.0.0
-      - run: editorconfig-checker -format github-actions
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - run: mise run ci:lint-editorconfig
+        shell: bash
+
+  lint-shell:
+    name: Lint (shell)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - run: mise run ci:lint-shell
+        shell: bash
+
+  lint-renovate:
+    name: Lint (renovate)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - run: mise run ci:lint-renovate
+        shell: bash
 
   ci-complete:
     needs:
@@ -98,6 +101,8 @@ jobs:
       - lint-spelling
       - lint-markdown
       - lint-editorconfig
+      - lint-shell
+      - lint-renovate
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:

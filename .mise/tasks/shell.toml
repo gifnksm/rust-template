@@ -1,0 +1,14 @@
+["format:shell"]
+description = "Format shell script files"
+usage = '''
+flag "--check" help="Run shfmt in check mode"
+'''
+run = '''
+shfmt
+  {{- ' -d' if usage.check else ' -w' }}
+  {{- '' }} tests/scripts/* tests/test
+'''
+
+["lint:shell"]
+description = "Lint shell script files"
+run = "shellcheck tests/scripts/* tests/test"
