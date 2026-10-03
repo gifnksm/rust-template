@@ -1,5 +1,7 @@
 <!-- rumdl-disable MD063 -->
-<!-- cargo-sync-rdme title -->
+<!-- cargo-sync-rdme title [[ -->
+# {{ project-name }}
+<!-- cargo-sync-rdme ]] -->
 <!-- rumdl-enable MD063 -->
 <!-- cargo-sync-rdme badge -->
 

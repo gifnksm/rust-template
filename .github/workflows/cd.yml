@@ -35,6 +35,21 @@ jobs:
       - run: rustup toolchain add nightly --profile minimal
         shell: bash
       - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
+        with:
+          app-id: ${{ secrets.UPDATE_BOT_APP_ID }}
+          private-key: ${{ secrets.UPDATE_BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ env.PROJECT_NAME }}
+      - name: Get GitHub App user ID
+        id: app-user
+        run: |
+          user_id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)
+          echo "user-id=${user_id}" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        shell: bash
 
       - run: cargo generate --name "${{ env.PROJECT_NAME }}" --path "template" --template-values-file tests/template_values.toml --${{matrix.job.crate_type}} --allow-commands
         shell: bash
@@ -42,54 +57,50 @@ jobs:
         run: |
           cd "${PROJECT_NAME}"
           cargo generate-lockfile
-      - name: Set env vars for bin
-        run: |
-          {
-            echo 'SSH_KEY<<EOF'
-            echo "${{ secrets.GH_EXAMPLE_DEPLOY_BIN_SECRET }}"
-            echo 'EOF'
-          } >> "${GITHUB_ENV}"
-        if: ${{ matrix.job.crate_type == 'bin' }}
-
-      - name: Set env vars for lib
-        run: |
-          {
-            echo 'SSH_KEY<<EOF'
-            echo "${{ secrets.GH_EXAMPLE_DEPLOY_LIB_SECRET }}"
-            echo 'EOF'
-          } >> "${GITHUB_ENV}"
-        if: ${{ matrix.job.crate_type == 'lib' }}
+        shell: bash
 
       - name: Checkout example repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: gifnksm/${{ env.PROJECT_NAME }}
+          repository: ${{ github.repository_owner }}/${{ env.PROJECT_NAME }}
           path: example_repo
-          ssh-key: ${{ env.SSH_KEY }}
+          token: ${{ steps.app-token.outputs.token }}
 
-      - name: update example
+      - name: Update example repo
         run: |
           ./tests/scripts/update_repo example_repo ${{ env.PROJECT_NAME }}
           git -C example_repo add -N .
+        shell: bash
 
-      - name: test example
-        run: (cd example_repo && ../tests/scripts/run_ci "${{ matrix.job.crate_type }}")
-
-      - name: show example diff
-        run: git -C example_repo diff || true
-
-      - name: commit example
+      - name: Test example repo
         run: |
           cd example_repo
-          git config user.name github-actions
-          git config user.email github-actions@example.com
-          git add .
-          if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "automatic update" -m "from $GITHUB_REPOSITORY@$GITHUB_SHA"
-            git push
-          else
+          ../tests/scripts/run_ci "${{ matrix.job.crate_type }}"
+        shell: bash
+
+      - name: Show example repo diff
+        run: git -C example_repo diff || true
+        shell: bash
+
+      - name: Push example repo
+        env:
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          APP_USER_ID: ${{ steps.app-user.outputs.user-id }}
+        run: |
+          cd example_repo
+
+          if [[ -z "$(git status --porcelain)" ]]; then
             echo "nothing to commit";
+            exit 0;
           fi
+
+          git config --local user.name "${APP_SLUG}[bot]"
+          git config --local user.email "${APP_USER_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
+
+          git add .
+          git commit -m "automatic update" -m "from $GITHUB_REPOSITORY@$GITHUB_SHA"
+          git push
+        shell: bash
         if: ${{ startsWith(github.ref, 'refs/heads/main') }}
 
   cd-complete:
