@@ -44,11 +44,12 @@ jobs:
           repositories: ${{ env.PROJECT_NAME }}
       - name: Get GitHub App user ID
         id: app-user
-        run: |
-          user_id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)
-          echo "user-id=${user_id}" >> "$GITHUB_OUTPUT"
         env:
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          user_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
+          echo "user-id=${user_id}" >> "$GITHUB_OUTPUT"
         shell: bash
 
       - run: cargo generate --name "${{ env.PROJECT_NAME }}" --path "template" --template-values-file tests/template_values.toml --${{matrix.job.crate_type}} --allow-commands
