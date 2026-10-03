@@ -38,7 +38,7 @@ jobs:
       - name: Cargo check
         run: |
           cd "${PROJECT_NAME}"
-          ../tests/scripts/run_cargo_tests "${{ matrix.job.crate_type }}"
+          ../tests/scripts/run_ci "${{ matrix.job.crate_type }}"
 
   lint-workflow:
     name: Lint (workflow)
