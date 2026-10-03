@@ -30,10 +30,10 @@ pkg-fmt = "tgz"
 pkg-fmt = "zip"
 
 [dependencies]
-clap = { version = "4.6", features = ["derive"] }
-clap_complete = "4.6"
-clap_complete_nushell = "4.6"
-clap_mangen = "0.3"
+clap = { version = "4.6.7", features = ["derive"] }
+clap_complete = "4.6.11"
+clap_complete_nushell = "4.6.2"
+clap_mangen = "0.3.3"
 
 [badges]
 maintenance = { status = "{{ maintenance-status }}" }
