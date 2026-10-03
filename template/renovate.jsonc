@@ -19,6 +19,12 @@
 
   "packageRules": [
     {
+      "description": "Disable mise lock file maintenance",
+      "matchManagers": ["mise"],
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "enabled": false
+    },
+    {
       "description": "Keep Cargo lock file maintenance in a dedicated PR",
       "matchManagers": ["cargo"],
       "matchUpdateTypes": ["lockFileMaintenance"],

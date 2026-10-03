@@ -16,7 +16,7 @@ keywords.
 
 Try to do one pull request per change.
 
-Run `just ci` before opening or updating a pull request.
+Run `mise run ci` before opening or updating a pull request.
 
 When a pull request resolves an issue, reference it in the PR description with
 `Closes #<number>`. When it is related to an issue but does not resolve it,
@@ -64,7 +64,7 @@ cargo test
 * Run the full CI-equivalent suite, including docs and tests, before opening or updating a pull request:
 
   ```console
-  just ci
+  mise run ci
   ```
 
 {%- if crate_type == "bin" %}
@@ -77,4 +77,4 @@ cargo test
 
 {%- endif %}
 
-See `just --list` for more commands.
+See `mise tasks ls` for more commands.

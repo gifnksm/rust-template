@@ -14,14 +14,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.ref_name != github.event.repository.default_branch }}
 
-env:
-  CARGO_TERM_COLOR: always
-
 permissions: {}
 
 jobs:
-  security-audit:
-    name: cargo-audit / issue reporting
+  issue-reporting:
+    name: Audit (issue reporting)
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -30,34 +27,30 @@ jobs:
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       - uses: actions-rust-lang/audit@72c09e02f132669d52284a3323acdb503cfc1a24 # v1.2.7
 
-  cargo-deny-advisories:
-    name: cargo-deny / advisories
+  advisories:
+    name: Audit (advisories)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@v1
+      - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # v1
         with:
           toolchain: stable
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: cargo-deny
-      - run: cargo deny check advisories
+      - run: mise run audit:advisories
         shell: bash
 
-  cargo-deny-policy:
-    name: cargo-deny / bans licenses sources
+  policy:
+    name: Audit (bans, licenses, sources)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@v1
+      - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # v1
         with:
           toolchain: stable
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: cargo-deny
-      - run: cargo deny check bans licenses sources
+      - run: mise run audit:policy
         shell: bash
 
   audit-complete:
@@ -65,15 +58,15 @@ jobs:
     # and advisory results are visible, but intentionally exclude them from the
     # required status check so newly disclosed advisories do not suddenly fail CI.
     needs:
-      - security-audit
-      - cargo-deny-advisories
-      - cargo-deny-policy
+      - issue-reporting
+      - advisories
+      - policy
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
       - name: Audit complete
         run: |
-          if [[ "${{ needs['cargo-deny-policy'].result }}" == "success" ]]; then
+          if [[ "${{ needs['policy'].result }}" == "success" ]]; then
             echo "Audit succeeded"
           else
             echo "Audit failed"

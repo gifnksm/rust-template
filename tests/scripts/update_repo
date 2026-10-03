@@ -13,3 +13,9 @@ find "${repo_path}" -mindepth 1 -maxdepth 1 -not -name .git -a -not -name CHANGE
 find "${output_path}" -mindepth 1 -maxdepth 1 -not -name .git -a -not -name CHANGELOG.md -exec cp -r {} "${repo_path}" \;
 
 perl -i -pe 's@(?<=^version = ").*(?="$)@'"${repo_pkg_version}"'@' "${repo_path}/Cargo.toml"
+
+(
+    cd "${repo_path}"
+    cargo generate-lockfile
+    MISE_TRUSTED_CONFIG_PATHS="$PWD" mise lock
+)
