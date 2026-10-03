@@ -75,8 +75,8 @@ typos *args:
     typos {{ args }}
 
 # Lint markdown files.
-markdownlint *args:
-    npx markdownlint-cli {{ args }} .
+rumdl *args:
+    rumdl check {{ args }}
 
 # Check EditorConfig compliance.
 editorconfig *args:
@@ -134,7 +134,7 @@ ci-lint-spelling:
 
 # CI: lint markdown files.
 ci-lint-markdown:
-    just markdownlint
+    just rumdl
 
 # CI: check EditorConfig compliance.
 ci-lint-editorconfig *args:
