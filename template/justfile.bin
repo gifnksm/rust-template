@@ -86,60 +86,54 @@ tombi-format *args:
 tombi-lint *args:
     uvx tombi lint {{ args }}
 
-# Run lint and static checks used for day-to-day local verification.
-ci-lint: ci-rustfmt ci-check ci-clippy ci-machete ci-actionlint ci-typos ci-markdownlint ci-editorconfig ci-tombi-format ci-tombi-lint
-
 # Run all CI-equivalent checks.
-ci: ci-lint ci-rustdoc ci-sync-rdme ci-test ci-coverage
+ci: ci-lint-rustfmt ci-check-rust ci-lint-rust ci-lint-unused-deps ci-lint-workflow ci-lint-spelling ci-lint-markdown ci-lint-editorconfig ci-lint-toml ci-check-rustdoc ci-check-markdown ci-test ci-coverage
 
 # CI: formatting must be clean.
-ci-rustfmt:
+ci-lint-rustfmt:
     just fmt --check
 
 # CI: compile checks.
-ci-check:
+ci-check-rust:
     just check-all
 
 # CI: clippy warnings are treated as errors.
 [env("CARGO_BUILD_WARNINGS", "deny")]
-ci-clippy:
+ci-lint-rust:
     just clippy-all
 
 # CI: rustdoc warnings are treated as errors.
 [env("CARGO_BUILD_WARNINGS", "deny")]
-ci-rustdoc:
+ci-check-rustdoc:
     just doc-all --no-deps
 
-# CI: README sync must produce no diff.
-ci-sync-rdme:
+# CI: generated markdown content must produce no diff.
+ci-check-markdown:
     just sync-rdme-all --check
 
 # CI: dependency hygiene.
-ci-machete:
+ci-lint-unused-deps:
     just machete
 
 # CI: check workflow files.
-ci-actionlint:
+ci-lint-workflow:
     just actionlint
 
 # CI: check spelling.
-ci-typos:
+ci-lint-spelling:
     just typos
 
 # CI: lint markdown files.
-ci-markdownlint:
+ci-lint-markdown:
     just markdownlint
 
 # CI: check EditorConfig compliance.
-ci-editorconfig *args:
+ci-lint-editorconfig *args:
     just editorconfig {{ args }}
 
-# CI: TOML formatting must be clean.
-ci-tombi-format:
+# CI: TOML formatting and lint must be clean.
+ci-lint-toml:
     just tombi-format --check
-
-# CI: TOML lint must be clean.
-ci-tombi-lint:
     just tombi-lint --error-on-warnings
 
 # CI: test suite.

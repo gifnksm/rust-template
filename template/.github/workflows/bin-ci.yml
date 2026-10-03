@@ -45,8 +45,8 @@ jobs:
           jq -n --argjson rust "${rust}" --argjson os "${os}" '{ rust: $rust, os: $os }'
         shell: bash
 
-  rustfmt:
-    name: Rustfmt
+  lint-rustfmt:
+    name: Lint (rustfmt)
     strategy:
       fail-fast: true
       matrix:
@@ -62,11 +62,11 @@ jobs:
       - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
         with:
           tool: just
-      - run: just ci-rustfmt
+      - run: just ci-lint-rustfmt
         shell: bash
 
-  check:
-    name: Check
+  check-rust:
+    name: Check (rust)
     needs: set-matrix
     strategy:
       fail-fast: true
@@ -83,11 +83,11 @@ jobs:
         with:
           tool: just,cargo-hack
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: just ci-check
+      - run: just ci-check-rust
         shell: bash
 
-  clippy:
-    name: Clippy
+  lint-rust:
+    name: Lint (rust)
     needs: set-matrix
     strategy:
       fail-fast: true
@@ -105,11 +105,11 @@ jobs:
         with:
           tool: just,cargo-hack
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: just ci-clippy
+      - run: just ci-lint-rust
         shell: bash
 
-  rustdoc:
-    name: Rustdoc
+  check-rustdoc:
+    name: Check (rustdoc)
     needs: set-matrix
     strategy:
       fail-fast: true
@@ -126,11 +126,11 @@ jobs:
         with:
           tool: just,cargo-hack
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: just ci-rustdoc
+      - run: just ci-check-rustdoc
         shell: bash
 
-  sync-rdme:
-    name: Sync Readme
+  check-markdown:
+    name: Check (markdown)
     needs: set-matrix
     strategy:
       fail-fast: true
@@ -149,11 +149,11 @@ jobs:
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       - run: rustup toolchain install nightly --profile minimal
         shell: bash
-      - run: just ci-sync-rdme
+      - run: just ci-check-markdown
         shell: bash
 
-  machete:
-    name: Machete
+  lint-unused-deps:
+    name: Lint (unused dependencies)
     needs: set-matrix
     strategy:
       fail-fast: true
@@ -170,7 +170,7 @@ jobs:
         with:
           tool: just,cargo-machete
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: just ci-machete
+      - run: just ci-lint-unused-deps
         shell: bash
 
   test:
@@ -221,8 +221,8 @@ jobs:
           files: target/codecov.json
           fail_ci_if_error: false
 
-  release-dry-run:
-    name: Release dry run
+  check-release:
+    name: Check (release)
     strategy:
       fail-fast: true
       matrix:
@@ -243,8 +243,8 @@ jobs:
       - run: cargo release patch -vv --allow-branch '*'
         shell: bash
 
-  actionlint:
-    name: Actionlint
+  lint-workflow:
+    name: Lint (workflow)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -256,30 +256,30 @@ jobs:
         shell: bash
       - run: |
           echo "::add-matcher::.github/actionlint-matcher.json"
-          just ci-actionlint
+          just ci-lint-workflow
 
-  typos:
-    name: Typos
+  lint-spelling:
+    name: Lint (spelling)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
         with:
           tool: just,typos
-      - run: just ci-typos
+      - run: just ci-lint-spelling
 
-  markdownlint:
-    name: Markdownlint
+  lint-markdown:
+    name: Lint (markdown)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
         with:
           tool: just
-      - run: just ci-markdownlint
+      - run: just ci-lint-markdown
 
-  editorconfig:
-    name: EditorConfig
+  lint-editorconfig:
+    name: Lint (editorconfig)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -287,10 +287,10 @@ jobs:
         with:
           tool: just
       - uses: editorconfig-checker/action-editorconfig-checker@51f63319f592f97930c73d9c46184d20bd206393 # v3.0.0
-      - run: just ci-editorconfig -format github-actions
+      - run: just ci-lint-editorconfig -format github-actions
 
-  tombi:
-    name: Tombi
+  lint-toml:
+    name: Lint (toml)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -298,28 +298,26 @@ jobs:
       - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
         with:
           tool: just
-      - run: just ci-tombi-format
-        shell: bash
-      - run: just ci-tombi-lint
+      - run: just ci-lint-toml
         shell: bash
 
   ci-complete:
     needs:
       - set-matrix
-      - rustfmt
-      - check
-      - clippy
-      - rustdoc
-      - sync-rdme
-      - machete
+      - lint-rustfmt
+      - check-rust
+      - lint-rust
+      - check-rustdoc
+      - check-markdown
+      - lint-unused-deps
       - test
       - coverage
-      - release-dry-run
-      - actionlint
-      - typos
-      - markdownlint
-      - editorconfig
-      - tombi
+      - check-release
+      - lint-workflow
+      - lint-spelling
+      - lint-markdown
+      - lint-editorconfig
+      - lint-toml
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
