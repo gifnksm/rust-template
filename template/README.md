@@ -15,26 +15,28 @@
 There are multiple ways to install {{project-name}}.
 Choose any one of the methods below that best suits your needs.
 
-### Pre-Built Binaries
+### Prebuilt Binaries
 
-Executable binaries are available for download on the [GitHub Release page].
+Executable binaries are published on the [GitHub Release page].
 
-You can also install the binary with [`cargo-binstall`] command.
+Download the appropriate archive for your platform (Windows, macOS, Linux) and architecture (x86_64, aarch64) and extract the archive. The archive contains the {{project-name}} executable.
+
+If you use [`cargo-binstall`], you can install {{project-name}} with the following command:
 
 ```console
-# Install pre-built binary
+# Install prebuilt binary
 cargo binstall {{project-name}}
 ```
 
 [GitHub Release page]: https://github.com/{{gh-username}}/{{project-name}}/releases/
 [`cargo-binstall`]: https://github.com/cargo-bins/cargo-binstall
 
-### Build from Source Using Rust
+### Install from Source
 
-To build {{project-name}} executable from the source, you must have the Rust toolchain installed.
-To install the rust toolchain, follow [this guide](https://www.rust-lang.org/tools/install).
+To install {{project-name}} from source, the Rust toolchain must be installed on your system.
+See [the Rust installation guide](https://www.rust-lang.org/tools/install) if you do not have Rust installed yet.
 
-Once you have installed Rust, the following command can be used to build and install {{project-name}}:
+Then install either the latest released version or the current development version from the Git repository.
 
 ```console
 # Install released version
