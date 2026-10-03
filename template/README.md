@@ -1,4 +1,6 @@
+<!-- rumdl-disable MD063 -->
 <!-- cargo-sync-rdme title -->
+<!-- rumdl-enable MD063 -->
 <!-- cargo-sync-rdme badge -->
 
 {% if crate_type == "lib" -%}
@@ -11,7 +13,7 @@
 There are multiple ways to install {{project-name}}.
 Choose any one of the methods below that best suits your needs.
 
-### Pre-built binaries
+### Pre-Built Binaries
 
 Executable binaries are available for download on the [GitHub Release page].
 
@@ -19,13 +21,13 @@ You can also install the binary with [`cargo-binstall`] command.
 
 ```console
 # Install pre-built binary
-$ cargo binstall {{project-name}}
+cargo binstall {{project-name}}
 ```
 
 [GitHub Release page]: https://github.com/{{gh-username}}/{{project-name}}/releases/
 [`cargo-binstall`]: https://github.com/cargo-bins/cargo-binstall
 
-### Build from source using Rust
+### Build from Source Using Rust
 
 To build {{project-name}} executable from the source, you must have the Rust toolchain installed.
 To install the rust toolchain, follow [this guide](https://www.rust-lang.org/tools/install).
@@ -34,15 +36,15 @@ Once you have installed Rust, the following command can be used to build and ins
 
 ```console
 # Install released version
-$ cargo install {{project-name}}
+cargo install {{project-name}}
 
 # Install latest version
-$ cargo install --git https://github.com/{{gh-username}}/{{project-name}}.git {{ project-name }}
+cargo install --git https://github.com/{{gh-username}}/{{project-name}}.git {{ project-name }}
 ```
 
 {%- endif %}
 
-## Minimum supported Rust version (MSRV)
+## Minimum Supported Rust Version (MSRV)
 
 The minimum supported Rust version is **Rust {{rust-version}}**.
 
@@ -54,9 +56,9 @@ Once a crate has reached 1.x, any MSRV bump will be accompanied by a new minor v
 This project is licensed under either of
 
 * Apache License, Version 2.0
-   ([LICENSE-APACHE](LICENSE-APACHE) or <http://www.apache.org/licenses/LICENSE-2.0>)
+  ([LICENSE-APACHE](LICENSE-APACHE) or <http://www.apache.org/licenses/LICENSE-2.0>)
 * MIT license
-   ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
+  ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
 
 at your option.
 

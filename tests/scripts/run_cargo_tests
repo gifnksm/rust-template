@@ -16,6 +16,10 @@ bin | lib) ;;
     ;;
 esac
 
+if ! [[ -d .git ]]; then
+    git init
+fi
+
 just ci
 if [[ "${crate_type}" == "bin" ]]; then
     ./scripts/build-dist
