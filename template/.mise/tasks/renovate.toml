@@ -1,0 +1,7 @@
+["lint:renovate"]
+description = "Lint Renovate config files"
+# Run the validator via npx so it uses the latest Renovate release. When
+# Renovate is managed as a mise tool, it is stored in lockfile v2 sidecars,
+# and Renovate does not yet reliably update package versions and sidecar
+# lockfiles in that format.
+run = "npx --yes --package renovate -- renovate-config-validator --strict"

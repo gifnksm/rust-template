@@ -36,8 +36,18 @@ jobs:
       - run: cargo generate --name "${{ env.PROJECT_NAME }}" --path "template" --template-values-file tests/template_values.toml --${{matrix.job.crate_type}} --allow-commands
         shell: bash
       - name: Cargo check
+        env:
+          GIT_AUTHOR_NAME: "Dummy Name"
+          GIT_AUTHOR_EMAIL: "dummy@example.com"
+          GIT_COMMITTER_NAME: "Dummy Name"
+          GIT_COMMITTER_EMAIL: "dummy@example.com"
         run: |
           cd "${PROJECT_NAME}"
+          git init
+          cargo generate-lockfile
+          mise lock
+          git add .
+          git commit -m "Initial commit"
           ../tests/scripts/run_ci "${{ matrix.job.crate_type }}"
 
   lint-workflow:

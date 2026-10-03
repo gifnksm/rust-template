@@ -11,12 +11,17 @@ for crate_type in bin lib; do
 
     (
         cd "out.${crate_type}"
+        git init
         cargo generate -v --init \
             --path ../../template \
             "--${crate_type}" \
             --name "rust-template-generated-${crate_type}" \
             --template-values-file ../template_values.toml \
             --allow-commands
+        cargo generate-lockfile
+        MISE_TRUSTED_CONFIG_PATHS="$PWD" mise lock
+        git add .
+        git commit -m "Initial commit"
         ../scripts/run_ci "${crate_type}"
     )
 
@@ -25,6 +30,8 @@ for crate_type in bin lib; do
     ./scripts/update_repo "repo.${crate_type}" "out.${crate_type}"
     (
         cd "repo.${crate_type}"
+        git add .
+        git commit -m "Sync to latest template"
         ../scripts/run_ci "${crate_type}"
     )
 done

@@ -31,15 +31,15 @@ jobs:
       - name: Set matrix values
         id: set-values
         run: |
-          root_package_id="$(cargo metadata --format-version 1 | jq -cr '.resolve.root')"
-          root_package="$(cargo metadata --format-version 1 | jq -c --arg pkgid "${root_package_id}" '.packages[] | select(.id == $pkgid)')"
-          echo "${root_package}" | jq -c '{ root_package: .name }'
+          json_array() {
+            jq -cn --args '$ARGS.positional' "$@"
+          }
 
-          msrv="$(echo "${root_package}" | jq '.rust_version')"
-          rust="$(echo "[\"stable\", ${msrv}]" | jq -c)"
+          msrv="$(./scripts/print-msrv)"
+          rust="$(json_array stable "${msrv}")"
           echo "rust=${rust}" >> "$GITHUB_OUTPUT"
 
-          os="$(echo '["ubuntu-latest", "macos-latest", "windows-latest"]' | jq -c)"
+          os="$(json_array ubuntu-latest macos-latest windows-latest)"
           echo "os=${os}" >> "$GITHUB_OUTPUT"
 
           jq -n --argjson rust "${rust}" --argjson os "${os}" '{ rust: $rust, os: $os }'
@@ -59,10 +59,9 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
           components: rustfmt
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: just
-      - run: just ci-lint-rustfmt
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+      - run: mise run ci:lint-rustfmt
         shell: bash
 
   check-rust:
@@ -79,11 +78,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: just,cargo-hack
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: just ci-check-rust
+      - run: mise run ci:check-rust
         shell: bash
 
   lint-rust:
@@ -101,11 +98,9 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
           components: clippy
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: just,cargo-hack
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: just ci-lint-rust
+      - run: mise run ci:lint-rust
         shell: bash
 
   check-rustdoc:
@@ -122,11 +117,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: just,cargo-hack
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: just ci-check-rustdoc
+      - run: mise run ci:check-rustdoc
         shell: bash
 
   check-markdown:
@@ -143,13 +136,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: just,cargo-hack,cargo-sync-rdme
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: rustup toolchain install nightly --profile minimal
-        shell: bash
-      - run: just ci-check-markdown
+      - run: mise run ci:check-markdown
         shell: bash
 
   lint-unused-deps:
@@ -166,11 +155,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: just,cargo-machete
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: just ci-lint-unused-deps
+      - run: mise run ci:lint-unused-deps
         shell: bash
 
   test:
@@ -187,11 +174,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: just,cargo-hack
-      - run: just ci-test
+      - run: mise run ci:test-rust
         shell: bash
 
   coverage:
@@ -209,11 +194,9 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
           components: llvm-tools-preview
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: just,cargo-llvm-cov
-      - run: just ci-coverage
+      - run: mise run ci:coverage-rust
         shell: bash
       - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
@@ -234,13 +217,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: rustup toolchain install nightly --profile minimal
-        shell: bash
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: cargo-release,just,cargo-hack,cargo-sync-rdme
-      - run: cargo release patch -vv --allow-branch '*'
+      - run: mise run check:release --skip-ci
         shell: bash
 
   lint-workflow:
@@ -248,60 +227,57 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: just
-      - name: Install actionlint
-        run: bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) && sudo mv actionlint /usr/local/bin/
-        shell: bash
-      - run: |
-          echo "::add-matcher::.github/actionlint-matcher.json"
-          just ci-lint-workflow
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - run: mise run ci:lint-workflow
 
   lint-spelling:
     name: Lint (spelling)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: just,typos
-      - run: just ci-lint-spelling
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - run: mise run ci:lint-spelling
 
   lint-markdown:
     name: Lint (markdown)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: just
-      - uses: rvben/rumdl@9c4cc2a2ebe176de68e1788106e25af8a9bd3899 # v0.2.78
-        with:
-          install-only: true
-      - run: just ci-lint-markdown
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - run: mise run ci:lint-markdown
 
   lint-editorconfig:
     name: Lint (editorconfig)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: just
-      - uses: editorconfig-checker/action-editorconfig-checker@51f63319f592f97930c73d9c46184d20bd206393 # v3.0.0
-      - run: just ci-lint-editorconfig -format github-actions
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - run: mise run ci:lint-editorconfig
 
   lint-toml:
     name: Lint (toml)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: just
-      - run: just ci-lint-toml
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - run: mise run ci:lint-toml
+
+  lint-shell:
+    name: Lint (shell scripts)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - run: mise run ci:lint-shell
+        shell: bash
+
+  lint-renovate:
+    name: Lint (renovate)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - run: mise run ci:lint-renovate
         shell: bash
 
   ci-complete:
@@ -321,6 +297,8 @@ jobs:
       - lint-markdown
       - lint-editorconfig
       - lint-toml
+      - lint-shell
+      - lint-renovate
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:

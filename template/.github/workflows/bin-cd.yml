@@ -42,24 +42,19 @@ jobs:
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
-      - uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
-        with:
-          tool: cargo-about
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           key: ${{ matrix.job.target }}
-
       - name: Install modern bash on macOS
         if: startsWith(matrix.job.os, 'macos')
         run: |
           brew install bash
           echo "/opt/homebrew/bin" >> "$GITHUB_PATH"
         shell: bash
-
-      - name: Build artifact
-        run: ./scripts/build-dist --target "${{ matrix.job.target }}"
+      - name: Build
+        run: mise run cd:build --target "${{ matrix.job.target }}"
         shell: bash
-
       - name: Upload binaries as artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

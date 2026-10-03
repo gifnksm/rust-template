@@ -16,11 +16,7 @@ bin | lib) ;;
     ;;
 esac
 
-if ! [[ -d .git ]]; then
-    git init
-fi
-
-just ci
+MISE_TRUSTED_CONFIG_PATHS="$PWD" mise run ci
 if [[ "${crate_type}" == "bin" ]]; then
     ./scripts/build-dist
 fi
