@@ -31,3 +31,7 @@ cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
 
 [badges]
 maintenance = { status = "{{ maintenance-status }}" }
+
+[profile.dev]
+# for faster development iterations
+debug = "line-tables-only"
