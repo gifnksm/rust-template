@@ -24,7 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       rust: ${{ steps.set-values.outputs.rust }}
-      os: ${{ steps.set-values.outputs.os }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1
@@ -42,28 +41,7 @@ jobs:
           rust="$(json_array stable "${msrv}")"
           echo "rust=${rust}" >> "$GITHUB_OUTPUT"
 
-          os="$(json_array ubuntu-latest macos-latest windows-latest)"
-          echo "os=${os}" >> "$GITHUB_OUTPUT"
-
-          jq -n --argjson rust "${rust}" --argjson os "${os}" '{ rust: $rust, os: $os }'
-        shell: bash
-
-  lint-rustfmt:
-    name: Lint (rustfmt)
-    strategy:
-      fail-fast: true
-      matrix:
-        rust: [stable]
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1
-        with:
-          toolchain: ${{ matrix.rust }}
-      - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: mise run ci:lint-rustfmt
+          jq -n --argjson rust "${rust}" '{ rust: $rust }'
         shell: bash
 
   check-rust:
@@ -73,91 +51,48 @@ jobs:
       fail-fast: true
       matrix:
         rust: ${{ fromJSON(needs.set-matrix.outputs.rust) }}
-        os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1
-        with:
-          toolchain: ${{ matrix.rust }}
-      - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: mise run ci:check-rust
-        shell: bash
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    uses: ./.github/workflows/reusable-check-rust.yml
+    with:
+      rust-toolchain: ${{ matrix.rust }}
+      os: ${{ matrix.os }}
+      run-doc-checks: ${{ matrix.rust == 'stable' }}
 
   lint-rust:
     name: Lint (rust)
-    needs: set-matrix
     strategy:
       fail-fast: true
       matrix:
         rust: [stable]
-        os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1
-        with:
-          toolchain: ${{ matrix.rust }}
-      - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: mise run ci:lint-rust
-        shell: bash
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    uses: ./.github/workflows/reusable-lint-rust.yml
+    with:
+      rust-toolchain: ${{ matrix.rust }}
+      os: ${{ matrix.os }}
 
-  check-rustdoc:
-    name: Check (rustdoc)
+  test-rust:
+    name: Test (rust)
     needs: set-matrix
     strategy:
       fail-fast: true
       matrix:
-        rust: [stable]
-        os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1
-        with:
-          toolchain: ${{ matrix.rust }}
-      - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: mise run ci:check-rustdoc
-        shell: bash
-
-  check-docs-rs:
-    name: Check (docs.rs)
-    needs: set-matrix
-    strategy:
-      fail-fast: true
-      matrix:
-        rust: [stable]
-        os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1
-        with:
-          toolchain: ${{ matrix.rust }}
-      - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
-      - run: mise run install-toolchains-for-ci-check-docs-rs
-        shell: bash
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - name: Install modern bash on macOS
-        if: startsWith(matrix.os, 'macos')
-        run: |
-          brew install bash
-          echo "/opt/homebrew/bin" >> "$GITHUB_PATH"
-        shell: bash
-      - run: mise run ci:check-docs-rs
-        shell: bash
+        rust: ${{ fromJSON(needs.set-matrix.outputs.rust) }}
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    uses: ./.github/workflows/reusable-test-rust.yml
+    with:
+      rust-toolchain: ${{ matrix.rust }}
+      os: ${{ matrix.os }}
+      collect-coverage: ${{ matrix.rust == 'stable' }}
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   check-markdown:
     name: Check (markdown)
-    needs: set-matrix
     strategy:
       fail-fast: true
       matrix:
         rust: [stable]
-        os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
+        os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -170,68 +105,6 @@ jobs:
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       - run: mise run ci:check-markdown
         shell: bash
-
-  lint-unused-deps:
-    name: Lint (unused dependencies)
-    needs: set-matrix
-    strategy:
-      fail-fast: true
-      matrix:
-        rust: [stable]
-        os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1
-        with:
-          toolchain: ${{ matrix.rust }}
-      - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: mise run ci:lint-unused-deps
-        shell: bash
-
-  test:
-    name: Test
-    needs: set-matrix
-    strategy:
-      fail-fast: true
-      matrix:
-        rust: ${{ fromJSON(needs.set-matrix.outputs.rust) }}
-        os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1
-        with:
-          toolchain: ${{ matrix.rust }}
-      - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: mise run ci:test-rust
-        shell: bash
-
-  coverage:
-    name: Coverage (test)
-    needs: set-matrix
-    strategy:
-      fail-fast: true
-      matrix:
-        rust: [stable]
-        os: ${{ fromJSON(needs.set-matrix.outputs.os) }}
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1
-        with:
-          toolchain: ${{ matrix.rust }}
-      - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: mise run ci:coverage-rust
-        shell: bash
-      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: target/codecov.json
-          fail_ci_if_error: false
 
   check-release:
     name: Check (release)
@@ -312,15 +185,10 @@ jobs:
   ci-complete:
     needs:
       - set-matrix
-      - lint-rustfmt
       - check-rust
       - lint-rust
-      - check-rustdoc
-      - check-docs-rs
+      - test-rust
       - check-markdown
-      - lint-unused-deps
-      - test
-      - coverage
       - check-release
       - lint-workflow
       - lint-spelling
