@@ -138,6 +138,12 @@ jobs:
       - run: mise run install-toolchains-for-ci-check-docs-rs
         shell: bash
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+      - name: Install modern bash on macOS
+        if: startsWith(matrix.os, 'macos')
+        run: |
+          brew install bash
+          echo "/opt/homebrew/bin" >> "$GITHUB_PATH"
+        shell: bash
       - run: mise run ci:check-docs-rs
         shell: bash
 
