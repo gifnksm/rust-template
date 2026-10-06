@@ -35,9 +35,13 @@ description = "Check rustdoc builds across exhaustive feature combinations"
 env = { CARGO_BUILD_WARNINGS = "deny" }
 run = "cargo hack --workspace --feature-powerset doc --no-deps"
 
+[install-toolchains-for-check-docs-rs]
+description = "Install Rust toolchain for docs.rs documentation checks"
+depends = ["install-nightly-toolchain"]
+
 ["check:docs-rs"]
 description = "Check docs.rs-compatible documentation builds"
-depends = ["install-nightly-toolchain"]
+depends = ["install-toolchains-for-check-docs-rs"]
 env = { CARGO_BUILD_WARNINGS = "deny" }
 run = "rustup run nightly bash ./scripts/cargo-hack-lib docs-rs"
 
