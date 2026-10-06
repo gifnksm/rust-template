@@ -19,16 +19,17 @@ This template provides the following features:
 ### GitHub Integration
 
 * [security checks](./template/.github/workflows/audit.yml)
-* [continuous integration](./template/.github/workflows/ci.bin.yml)
+* [continuous integration](./template/.github/workflows/ci.yml)
   * cargo test (stable toolchain and MSRV toolchain)
   * cargo build (stable toolchain and MSRV toolchain)
   * rustfmt
   * clippy
   * rustdoc
+  * docs-rs
   * publish-dry-run
   * code coverage ([codecov.io])
 * [continuous delivery](./template/.github/workflows/cd.bin.yml)
-  * publish pre-built binary for Linux, macOS, and Windows (bin crate only)
+  * publish prebuilt binary for Linux, macOS, and Windows (bin crate only)
 * [issue template](./template/.github/ISSUE_TEMPLATE/)
 * [pull request template](./template/.github/PULL_REQUEST_TEMPLATE.md)
 

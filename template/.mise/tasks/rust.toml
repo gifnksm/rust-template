@@ -39,7 +39,7 @@ run = "cargo hack --workspace --feature-powerset doc --no-deps"
 description = "Check docs.rs-compatible documentation builds"
 depends = ["install-nightly-toolchain"]
 env = { CARGO_BUILD_WARNINGS = "deny" }
-run = "rustup run nightly cargo hack docs-rs --workspace"
+run = "rustup run nightly bash ./scripts/cargo-hack-lib docs-rs"
 
 ["lint:unused-deps"]
 description = "Check for unused dependencies"
