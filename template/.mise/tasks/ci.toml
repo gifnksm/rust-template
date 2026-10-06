@@ -19,6 +19,9 @@ depends = [
   "check:rustdoc",
 ]
 
+["install-toolchains-for-ci-check-docs-rs"]
+depends = ["install-toolchains-for-check-docs-rs"]
+
 ["ci:check-docs-rs"]
 depends = [
   "show-version:rust",
@@ -54,6 +57,9 @@ depends = [
   "show-version:rust",
   "coverage:rust --codecov --output-path=target/codecov.json",
 ]
+
+["install-toolchains-for-ci-check-markdown"]
+depends = ["install-toolchains-for-sync-markdown"]
 
 ["ci:check-markdown"]
 depends = ["sync:markdown --check"]
