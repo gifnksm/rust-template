@@ -34,14 +34,14 @@ jobs:
         id: set-values
         run: |
           json_array() {
-            jq -cn --args '$ARGS.positional' "$@"
+            jq -cnb --args '$ARGS.positional' "$@"
           }
 
           msrv="$(./scripts/print-msrv)"
           rust="$(json_array stable "${msrv}")"
           echo "rust=${rust}" >> "$GITHUB_OUTPUT"
 
-          jq -n --argjson rust "${rust}" '{ rust: $rust }'
+          jq -nb --argjson rust "${rust}" '{ rust: $rust }'
         shell: bash
 
   check-rust:
