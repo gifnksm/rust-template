@@ -1,3 +1,5 @@
+name: Check Rust (Reusable)
+
 on:
   workflow_call:
     inputs:
