@@ -131,6 +131,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@94c60b39bc2d90ab2f9bab27f38d3cc4812c1834 # v5.1.0
       - run: mise run ci:lint-workflow
+        shell: bash
 
   lint-spelling:
     name: Lint (spelling)
@@ -139,6 +140,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@94c60b39bc2d90ab2f9bab27f38d3cc4812c1834 # v5.1.0
       - run: mise run ci:lint-spelling
+        shell: bash
 
   lint-markdown:
     name: Lint (markdown)
@@ -147,6 +149,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@94c60b39bc2d90ab2f9bab27f38d3cc4812c1834 # v5.1.0
       - run: mise run ci:lint-markdown
+        shell: bash
 
   lint-editorconfig:
     name: Lint (editorconfig)
@@ -155,6 +158,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@94c60b39bc2d90ab2f9bab27f38d3cc4812c1834 # v5.1.0
       - run: mise run ci:lint-editorconfig
+        shell: bash
 
   lint-toml:
     name: Lint (toml)
@@ -163,6 +167,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@94c60b39bc2d90ab2f9bab27f38d3cc4812c1834 # v5.1.0
       - run: mise run ci:lint-toml
+        shell: bash
 
   lint-shell:
     name: Lint (shell scripts)
