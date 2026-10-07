@@ -21,4 +21,4 @@ jq -r '
         or . == "proc-macro"
     )))
     | .name
-' <<<"${cargo_metadata}"
+' <<<"${cargo_metadata}" | tr -d '\r'
