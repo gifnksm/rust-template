@@ -10,7 +10,6 @@ lockfile_platforms = [
 ]
 
 [tools]
-actionlint = { version = "1.7.12", lazy = true }
 "aqua:taiki-e/cargo-llvm-cov" = { version = "0.9.1", lazy = true, lazy_bins = ["cargo-llvm-cov"] }
 cargo-binstall = "1.25.1"  # lets mise install cargo:* tools from binaries instead of compiling them
 cargo-deny = { version = "0.20.2", lazy = true }
@@ -21,6 +20,7 @@ cargo-deny = { version = "0.20.2", lazy = true }
 "cargo:cargo-release" = { version = "1.1.6", lazy = true, lazy_bins = ["cargo-release"] }
 "cargo:cargo-sync-rdme" = { version = "0.8.1", lazy = true, lazy_bins = ["cargo-sync-rdme"] }
 editorconfig-checker = { version = "4.0.2", lazy = true, lazy_bins = ["editorconfig-checker"] }
+jactionlint = { version = "1.8.2", lazy = true }
 rumdl = { version = "0.2.78", lazy = true }
 shellcheck = { version = "0.11.0", lazy = true }
 shfmt = { version = "3.14.1", lazy = true }
