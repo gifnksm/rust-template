@@ -17,6 +17,7 @@ env:
   CARGO_TERM_COLOR: always
   CARGO_INCREMENTAL: 0
   MISE_CARGO_BINSTALL_ONLY: true
+  MISE_LOCKED: true
 
 jobs:
   build:
@@ -42,7 +43,7 @@ jobs:
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
-      - run: cargo generate --name "${{ env.PROJECT_NAME }}" --path "template" --template-values-file tests/template_values.toml --${{matrix.job.crate_type}} --allow-commands
+      - run: MISE_LOCKED=false cargo generate --name "${{ env.PROJECT_NAME }}" --path "template" --template-values-file tests/template_values.toml --${{matrix.job.crate_type}} --allow-commands
         shell: bash
       - name: Cargo check
         env:

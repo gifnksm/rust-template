@@ -20,6 +20,7 @@ env:
   CARGO_TERM_COLOR: always
   CARGO_INCREMENTAL: 0
   MISE_CARGO_BINSTALL_ONLY: true
+  MISE_LOCKED: true
 
 jobs:
   synchronize_example:
@@ -52,7 +53,7 @@ jobs:
           owner: ${{ github.repository_owner }}
           repositories: ${{ env.PROJECT_NAME }}
 
-      - run: cargo generate --name "${{ env.PROJECT_NAME }}" --path "template" --template-values-file tests/template_values.toml --${{matrix.job.crate_type}} --allow-commands
+      - run: MISE_LOCKED=false cargo generate --name "${{ env.PROJECT_NAME }}" --path "template" --template-values-file tests/template_values.toml --${{matrix.job.crate_type}} --allow-commands
         shell: bash
 
       - name: Checkout example repo

@@ -2,7 +2,7 @@
 post = ["post-script.rhai"]
 
 [template]
-exclude = [".github/workflows/*.yml", ".mise/tasks/*.toml"]
+exclude = [".github/workflows/*.yml", ".mise/tasks/*.toml", "mise.*.toml"]
 
 [conditional.'crate_type == "lib"']
 ignore = ["src/main.rs", "scripts/build-dist", "about.toml", "about.hbs", ".cargo/config.toml"]
