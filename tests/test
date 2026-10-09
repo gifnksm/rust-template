@@ -12,7 +12,7 @@ for crate_type in bin lib; do
     (
         cd "out.${crate_type}"
         git init
-        cargo generate -v --init \
+        MISE_LOCKED=false cargo generate -v --init \
             --path ../../template \
             "--${crate_type}" \
             --name "rust-template-generated-${crate_type}" \
