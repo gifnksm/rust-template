@@ -14,6 +14,7 @@ run = [
 usage = '''
 flag "--skip-ci" help="Skip CI checks"
 '''
+wait_for = ["ci:*"]
 run = '''
 RELEASE_CHECK_FROM_CI="{{ usage.skip_ci }}" cargo release patch --allow-branch '*'
 '''
