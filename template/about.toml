@@ -11,3 +11,4 @@ accepted = [
   "Unicode-3.0",
 ]
 private = { ignore = true }
+ignore-dev-dependencies = true
