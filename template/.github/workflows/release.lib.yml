@@ -15,9 +15,23 @@ env:
   MISE_LOCKED: true
 
 jobs:
+  ci:
+    uses: $/.github/workflows/ci.yml
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  audit:
+    uses: $/.github/workflows/audit.yml
+    permissions:
+      contents: read
+      issues: write
+
   release:
     name: Release
     runs-on: ubuntu-latest
+    needs:
+      - ci
+      - audit
     permissions:
       contents: write
     steps:
