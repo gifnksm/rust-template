@@ -1,0 +1,53 @@
+[
+  {
+    "ruleset_name": "default branch",
+    "checks": [
+      {
+        "query": ".target",
+        "value": "branch"
+      },
+      {
+        "query": ".enforcement",
+        "value": "active"
+      },
+      {
+        "query": ".conditions",
+        "value": {
+          "ref_name": {
+            "exclude": [],
+            "include": ["~DEFAULT_BRANCH"]
+          }
+        }
+      },
+      {
+        "query": ".rules | any(.type == \"deletion\")",
+        "value": true
+      },
+      {
+        "query": ".rules | any(.type == \"non_fast_forward\")",
+        "value": true
+      },
+      {
+        "query": ".rules | any(.type == \"pull_request\")",
+        "value": true
+      },
+      {
+        "query": "[ .rules[] | select(.type == \"required_status_checks\") | .parameters.required_status_checks[]] | sort_by(.context)",
+        "value": [
+          { "context": "audit-complete", "integration_id": 15368 },
+          { "context": "ci-complete", "integration_id": 15368 }
+        ]
+      },
+      {
+        "query": ".bypass_actors",
+        "value": [
+          {
+            "actor_id": 5,
+            "actor_type": "RepositoryRole",
+            "bypass_mode": "always"
+          }
+        ]
+      }
+    ]
+  }
+]
