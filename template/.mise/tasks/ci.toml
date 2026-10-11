@@ -10,13 +10,13 @@ depends = ["ci:*"]
 ["ci:check-rust"]
 depends = [
   "show-version:rust",
-  "check:rust",
+  "check:rust --locked",
 ]
 
 ["ci:check-rustdoc"]
 depends = [
   "show-version:rust",
-  "check:rustdoc",
+  "check:rustdoc --locked",
 ]
 
 [install-toolchains-for-ci-check-docs-rs]
@@ -25,7 +25,7 @@ depends = ["install-toolchains-for-check-docs-rs"]
 ["ci:check-docs-rs"]
 depends = [
   "show-version:rust",
-  "check:docs-rs",
+  "check:docs-rs --locked",
 ]
 
 ["ci:lint-unused-deps"]
@@ -43,26 +43,26 @@ depends = [
 ["ci:lint-rust"]
 depends = [
   "show-version:rust",
-  "lint:rust",
+  "lint:rust --locked",
 ]
 
 ["ci:test-rust"]
 depends = [
   "show-version:rust",
-  "test:rust",
+  "test:rust --locked",
 ]
 
 ["ci:coverage-rust"]
 depends = [
   "show-version:rust",
-  "coverage:rust --codecov --output-path=target/codecov.json",
+  "coverage:rust --codecov --output-path=target/codecov.json --locked",
 ]
 
 [install-toolchains-for-ci-check-markdown]
 depends = ["install-toolchains-for-sync-markdown"]
 
 ["ci:check-markdown"]
-depends = ["sync:markdown --check"]
+depends = ["sync:markdown --check --locked"]
 
 ["ci:lint-toml"]
 depends = [
