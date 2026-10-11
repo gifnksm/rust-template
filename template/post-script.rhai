@@ -1,4 +1,5 @@
 let file_map = [
+    #{ target: ".github/workflows/build-dist.yml", bin: ".github/workflows/build-dist.bin.yml", lib: () },
     #{ target: ".github/workflows/release.yml", bin: ".github/workflows/release.bin.yml", lib: ".github/workflows/release.lib.yml" },
     #{ target: "Cargo.toml", bin: "Cargo.bin.toml", lib: "Cargo.lib.toml" },
     #{ target: "mise.toml", bin: "mise.bin.toml", lib: "mise.lib.toml" },
