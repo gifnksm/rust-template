@@ -49,5 +49,53 @@
         ]
       }
     ]
+  },
+  {
+    "ruleset_name": "release tag",
+    "checks": [
+      {
+        "query": ".target",
+        "value": "tag"
+      },
+      {
+        "query": ".enforcement",
+        "value": "active"
+      },
+      {
+        "query": ".conditions",
+        "value": {
+          "ref_name": {
+            "exclude": [],
+            "include": ["refs/tags/v[0-9]*"]
+          }
+        }
+      },
+      {
+        "query": ".rules | any(.type == \"deletion\")",
+        "value": true
+      },
+      {
+        "query": ".rules | any(.type == \"non_fast_forward\")",
+        "value": true
+      },
+      {
+        "query": ".rules | any(.type == \"creation\")",
+        "value": true
+      },
+      {
+        "query": ".rules | any(.type == \"update\")",
+        "value": true
+      },
+      {
+        "query": ".bypass_actors",
+        "value": [
+          {
+            "actor_id": 5,
+            "actor_type": "RepositoryRole",
+            "bypass_mode": "always"
+          }
+        ]
+      }
+    ]
   }
 ]
