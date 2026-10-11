@@ -1,8 +1,8 @@
 let file_map = [
-    #{ target: ".github/workflows/cd.yml", bin: ".github/workflows/cd.bin.yml", lib: ".github/workflows/cd.lib.yml" },
+    #{ target: ".github/workflows/release.yml", bin: ".github/workflows/release.bin.yml", lib: ".github/workflows/release.lib.yml" },
     #{ target: "Cargo.toml", bin: "Cargo.bin.toml", lib: "Cargo.lib.toml" },
     #{ target: "mise.toml", bin: "mise.bin.toml", lib: "mise.lib.toml" },
-    #{ target: ".mise/tasks/cd.toml", bin: ".mise/tasks/cd.bin.toml", lib: () },
+    #{ target: ".mise/tasks/dist.toml", bin: ".mise/tasks/dist.bin.toml", lib: () },
 ];
 
 let crate_type = variable::get("crate_type");

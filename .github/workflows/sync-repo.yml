@@ -104,7 +104,7 @@ jobs:
         shell: bash
         if: ${{ startsWith(github.ref, 'refs/heads/main') }}
 
-  cd-complete:
+  sync-repo-complete:
     needs:
       - synchronize_example
     runs-on: ubuntu-latest
