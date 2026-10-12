@@ -54,8 +54,8 @@ jobs:
   build:
     uses: $/.github/workflows/build-dist.yml
 
-  release:
-    name: Release
+  prepare-release:
+    name: Prepare GitHub Release
     runs-on: ubuntu-latest
     needs:
       - check-metadata
@@ -88,11 +88,12 @@ jobs:
             --verify-tag \
             --draft
 
-  publish:
+  publish-crate:
+    name: Publish crate to crates.io
     runs-on: ubuntu-latest
     needs:
       - check-metadata
-      - release
+      - prepare-release
     environment:
       name: crates-io
       url: https://crates.io/crates/${{ needs.check-metadata.outputs.package_name }}/${{ needs.check-metadata.outputs.package_version }}
@@ -106,3 +107,18 @@ jobs:
       - run: cargo publish --locked
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+
+  publish-release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    needs:
+      - publish-crate
+    permissions:
+      contents: write
+    steps:
+      - name: Publish draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release edit "$GITHUB_REF_NAME" --draft=false
