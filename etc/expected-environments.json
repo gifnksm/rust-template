@@ -1,0 +1,38 @@
+[
+  {
+    "environment_name": "crates-io",
+    "checks": [
+      {
+        "query": ".name",
+        "value": "crates-io"
+      },
+      {
+        "query": ".can_admins_bypass",
+        "value": false
+      },
+      {
+        "query": ".protection_rules | any(.type == \"branch_policy\")",
+        "value": true
+      },
+      {
+        "query": "[ .protection_rules[] | select(.type == \"required_reviewers\") | .reviewers[] | { type, login: .reviewer.login | if (. | ascii_downcase) == ($owner | ascii_downcase) then \"<owner>\" else . end } ]",
+        "value": [{ "login": "<owner>", "type": "User" }]
+      },
+      {
+        "query": ".deployment_branch_policy.custom_branch_policies",
+        "value": true
+      }
+    ],
+    "deployment_branch_policies": [
+      {
+        "query": "[ .branch_policies[] | { name, type } ]",
+        "value": [
+          {
+            "name": "v[0-9]*",
+            "type": "tag"
+          }
+        ]
+      }
+    ]
+  }
+]
