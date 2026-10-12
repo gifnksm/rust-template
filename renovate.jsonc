@@ -1,8 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)"
+  ],
 
   "minimumReleaseAge": "3 days",
+  "labels": ["dependencies"],
 
   // Override Cargo's default rangeStrategy so direct dependency updates also
   // refresh Cargo.toml instead of only updating Cargo.lock.
@@ -17,20 +23,6 @@
       "matchManagers": ["mise"],
       "matchUpdateTypes": ["lockFileMaintenance"],
       "enabled": false
-    },
-    {
-      "description": "Group compatible Cargo updates",
-      "matchManagers": ["cargo"],
-      "matchCurrentVersion": "!/^0\\./",
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "Cargo compatible dependencies"
-    },
-    {
-      "description": "Group compatible 0.1+ Cargo patch updates",
-      "matchManagers": ["cargo"],
-      "matchCurrentVersion": "/^0\\.[1-9]\\d*\\./",
-      "matchUpdateTypes": ["patch"],
-      "groupName": "Cargo compatible dependencies"
     }
   ]
 }
