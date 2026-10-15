@@ -25,6 +25,7 @@ jobs:
   build-dist:
     name: Build
     runs-on: ${{ matrix.job.os }}
+    timeout-minutes: 30
     strategy:
       fail-fast: true
       matrix:
@@ -46,6 +47,8 @@ jobs:
             target: aarch64-pc-windows-msvc
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # v1
         with:
           toolchain: ${{ matrix.rust }}
@@ -73,14 +76,17 @@ jobs:
           path: target/dist/*
 
   build-dist-complete:
+    if: ${{ always() }}
     needs:
       - build-dist
     runs-on: ubuntu-26.04
-    if: ${{ always() }}
+    timeout-minutes: 30
     steps:
       - name: Build Dist complete
+        env:
+          RESULT: ${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
         run: |
-          if ${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}; then
+          if "${RESULT}"; then
             echo "Build Dist succeeded"
           else
             echo "Build Dist failed"
