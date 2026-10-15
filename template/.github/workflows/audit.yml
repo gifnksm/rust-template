@@ -29,7 +29,7 @@ jobs:
     name: Audit (issue reporting)
     permissions:
       contents: read
-      issues: write
+      issues: write # Allow creating issues for advisories and policy violations
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     steps:
@@ -47,9 +47,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # v1
-        with:
-          toolchain: stable
+      - run: rustup toolchain install stable --profile minimal --default
+        shell: bash
       - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
         with:
           github_token: ${{ github.token }}
@@ -66,9 +65,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # v1
-        with:
-          toolchain: stable
+      - run: rustup toolchain install stable --profile minimal --default
+        shell: bash
       - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
         with:
           github_token: ${{ github.token }}
@@ -78,6 +76,7 @@ jobs:
         shell: bash
 
   audit-complete:
+    name: audit-complete
     if: ${{ always() }}
     # Wait for cargo-audit and cargo-deny advisories to finish so issue reporting
     # and advisory results are visible, but intentionally exclude them from the

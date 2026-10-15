@@ -101,6 +101,9 @@ jobs:
         run: |
           cd example_repo
           ../tests/scripts/run_ci "${CRATE_TYPE}"
+        env:
+          JACTIONLINT_ONLINE: 1
+          GITHUB_TOKEN: ${{ github.token }}
         shell: bash
 
       - name: Push example repo
