@@ -54,6 +54,8 @@ jobs:
           GIT_AUTHOR_EMAIL: "dummy@example.com"
           GIT_COMMITTER_NAME: "Dummy Name"
           GIT_COMMITTER_EMAIL: "dummy@example.com"
+          JACTIONLINT_ONLINE: 1
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           cd "${PROJECT_NAME}"
           git init
@@ -77,6 +79,9 @@ jobs:
           github_token: ${{ github.token }}
           persist_github_token: true
       - run: mise run ci:lint-workflow
+        env:
+          JACTIONLINT_ONLINE: 1
+          GITHUB_TOKEN: ${{ github.token }}
         shell: bash
 
   lint-spelling:

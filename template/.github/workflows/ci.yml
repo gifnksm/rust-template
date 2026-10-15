@@ -27,6 +27,7 @@ env:
 
 jobs:
   set-matrix:
+    name: Set matrix values
     outputs:
       rust: ${{ steps.set-values.outputs.rust }}
     runs-on: ubuntu-26.04
@@ -35,9 +36,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # v1
-        with:
-          toolchain: stable
+      - run: rustup toolchain install stable --profile minimal --default
+        shell: bash
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       - name: Set matrix values
         id: set-values
@@ -102,9 +102,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # v1
-        with:
-          toolchain: ${{ matrix.rust }}
+      - run: rustup toolchain install "${TOOLCHAIN}" --profile minimal --default
+        env:
+          TOOLCHAIN: ${{ matrix.rust }}
+        shell: bash
       - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
         with:
           github_token: ${{ github.token }}
@@ -128,9 +129,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # v1
-        with:
-          toolchain: ${{ matrix.rust }}
+      - run: rustup toolchain install "${TOOLCHAIN}" --profile minimal --default
+        env:
+          TOOLCHAIN: ${{ matrix.rust }}
+        shell: bash
       - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
         with:
           github_token: ${{ github.token }}
@@ -153,6 +155,9 @@ jobs:
           persist_github_token: true
       - run: mise run ci:lint-workflow
         shell: bash
+        env:
+          JACTIONLINT_ONLINE: 1
+          GITHUB_TOKEN: ${{ github.token }}
 
   lint-spelling:
     name: Lint (spelling)
@@ -182,9 +187,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # v1
-        with:
-          toolchain: ${{ matrix.rust }}
+      - run: rustup toolchain install "${TOOLCHAIN}" --profile minimal --default
+        env:
+          TOOLCHAIN: ${{ matrix.rust }}
+        shell: bash
       - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
         with:
           github_token: ${{ github.token }}
@@ -254,6 +260,7 @@ jobs:
         shell: bash
 
   ci-complete:
+    name: ci-complete
     if: ${{ always() }}
     needs:
       - set-matrix

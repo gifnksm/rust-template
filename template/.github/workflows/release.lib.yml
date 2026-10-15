@@ -30,9 +30,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # v1
-        with:
-          toolchain: stable
+      - run: rustup toolchain install stable --profile minimal --default
+        shell: bash
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       - name: Check Cargo package version
         id: check-metadata
@@ -57,7 +56,7 @@ jobs:
     uses: $/.github/workflows/audit.yml
     permissions:
       contents: read
-      issues: write
+      issues: write # Allow creating issues for security vulnerabilities
 
   prepare-release:
     name: Prepare GitHub Release
@@ -66,7 +65,7 @@ jobs:
       - ci
       - audit
     permissions:
-      contents: write
+      contents: write # Allow creating a draft GitHub Release
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     steps:
@@ -91,7 +90,7 @@ jobs:
       url: https://crates.io/crates/${{ needs.check-metadata.outputs.package_name }}/${{ needs.check-metadata.outputs.package_version }}
     permissions:
       contents: read
-      id-token: write
+      id-token: write # Allow generating OIDC tokens for authenticating with crates.io
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     steps:
@@ -110,7 +109,7 @@ jobs:
     needs:
       - publish-crate
     permissions:
-      contents: write
+      contents: write # Allow publishing the GitHub Release
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     steps:
