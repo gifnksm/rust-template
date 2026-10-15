@@ -26,6 +26,7 @@ jobs:
     name: Sync Example Repo with Template
     environment:
       name: example-repo
+      url: ${{ steps.sync.outputs.commit-url }}
     runs-on: ubuntu-26.04
     timeout-minutes: 5
     strategy:
@@ -54,6 +55,7 @@ jobs:
           APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
         shell: bash
       - uses: $/.github/actions/sync-repo
+        id: sync
         with:
           crate-type: ${{ matrix.crate_type }}
           github-token: ${{ github.token }}

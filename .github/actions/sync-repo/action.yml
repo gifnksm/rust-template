@@ -21,6 +21,11 @@ inputs:
     description: "Skip pushing changes to the example repository"
     default: "true"
 
+outputs:
+  commit-url:
+    description: "URL of the pushed commit in the example repository"
+    value: ${{ steps.push.outputs.commit-url }}
+
 runs:
   using: composite
   steps:
@@ -100,11 +105,14 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github-token }}
       shell: bash
     - name: Push example repo
+      id: push
       if: ${{ inputs.dry-run == 'false' && steps.commit-changes.outputs.updated == 'true' && github.ref == 'refs/heads/main' }}
       env:
         GH_TOKEN: ${{ inputs.push-token }}
+        PROJECT_NAME: ${{ steps.project.outputs.name }}
       run: |
         cd example_repo
         gh auth setup-git
         git push
+        echo "commit-url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY_OWNER}/${PROJECT_NAME}/commit/$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
       shell: bash
