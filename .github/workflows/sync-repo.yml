@@ -23,7 +23,7 @@ env:
   MISE_LOCKED: true
 
 jobs:
-  synchronize_example:
+  sync-repo:
     runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
@@ -32,14 +32,17 @@ jobs:
         job:
           - crate_type: "bin"
           - crate_type: "lib"
+    timeout-minutes: 5
     env:
       PROJECT_NAME: rust-template-generated-${{ matrix.job.crate_type }}
+      CRATE_TYPE: ${{ matrix.job.crate_type }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # v1
         with:
-          toolchain: stable
-      - run: rustup toolchain add nightly --profile minimal
+          persist-credentials: false
+      - run: rustup toolchain install stable --profile minimal --default
+        shell: bash
+      - run: rustup toolchain install nightly --profile minimal
         shell: bash
       - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
@@ -52,8 +55,10 @@ jobs:
           private-key: ${{ secrets.UPDATE_BOT_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: ${{ env.PROJECT_NAME }}
+          permission-contents: write
+          permission-workflows: write
 
-      - run: MISE_LOCKED=false cargo generate --name "${{ env.PROJECT_NAME }}" --path "template" --template-values-file tests/template_values.toml --${{matrix.job.crate_type}} --allow-commands
+      - run: MISE_LOCKED=false cargo generate --name "${PROJECT_NAME}" --path "template" --template-values-file tests/template_values.toml "--${CRATE_TYPE}" --allow-commands
         shell: bash
 
       - name: Checkout example repo
@@ -65,7 +70,7 @@ jobs:
 
       - name: Update example repo
         run: |
-          ./tests/scripts/update_repo example_repo ${{ env.PROJECT_NAME }}
+          ./tests/scripts/update_repo example_repo "${PROJECT_NAME}"
           git -C example_repo add -N .
         shell: bash
 
@@ -94,7 +99,7 @@ jobs:
       - name: Test example repo
         run: |
           cd example_repo
-          ../tests/scripts/run_ci "${{ matrix.job.crate_type }}"
+          ../tests/scripts/run_ci "${CRATE_TYPE}"
         shell: bash
 
       - name: Push example repo
@@ -102,17 +107,21 @@ jobs:
           cd example_repo
           git push
         shell: bash
-        if: ${{ startsWith(github.ref, 'refs/heads/main') }}
+        if: ${{ github.ref == 'refs/heads/main' }}
 
   sync-repo-complete:
-    needs:
-      - synchronize_example
-    runs-on: ubuntu-26.04
+    name: sync-repo-complete
     if: ${{ always() }}
+    needs:
+      - sync-repo
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
     steps:
       - name: CD complete
+        env:
+          RESULT: ${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
         run: |
-          if ${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}; then
+          if "${RESULT}"; then
             echo "CD succeeded"
           else
             echo "CD failed"
