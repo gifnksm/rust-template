@@ -1,9 +1,8 @@
-name: Synchronize the example with the template
+name: Sync Example Repo with Template
 on:
   push:
     branches:
       - main
-  pull_request:
   workflow_dispatch:
   schedule:
     # Runs at 00:00 UTC everyday
@@ -25,94 +24,43 @@ env:
 jobs:
   sync-repo:
     name: Sync Example Repo with Template
+    environment:
+      name: example-repo
     runs-on: ubuntu-26.04
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
-        rust: [stable]
-        job:
-          - crate_type: "bin"
-          - crate_type: "lib"
-    timeout-minutes: 5
-    env:
-      PROJECT_NAME: rust-template-generated-${{ matrix.job.crate_type }}
-      CRATE_TYPE: ${{ matrix.job.crate_type }}
+        crate_type: ["bin", "lib"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # v1
-        with:
-          toolchain: stable
-      - run: rustup toolchain install nightly --profile minimal
-        shell: bash
-      - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
-        with:
-          github_token: ${{ github.token }}
-          persist_github_token: true
       - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: app-token
         with:
           client-id: ${{ secrets.UPDATE_BOT_CLIENT_ID }}
           private-key: ${{ secrets.UPDATE_BOT_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-          repositories: ${{ env.PROJECT_NAME }}
+          repositories: rust-template-generated-${{ matrix.crate_type }}
           permission-contents: write
           permission-workflows: write
-
-      - run: MISE_LOCKED=false cargo generate --name "${PROJECT_NAME}" --path "template" --template-values-file tests/template_values.toml "--${CRATE_TYPE}" --allow-commands
-        shell: bash
-
-      - name: Checkout example repo
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          repository: ${{ github.repository_owner }}/${{ env.PROJECT_NAME }}
-          path: example_repo
-          token: ${{ steps.app-token.outputs.token }}
-
-      - name: Update example repo
+      - id: get-app-user-id
         run: |
-          ./tests/scripts/update_repo example_repo "${PROJECT_NAME}"
-          git -C example_repo add -N .
-        shell: bash
-
-      - name: Commit example repo changes
-        env:
-          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: |
-          cd example_repo
-
-          if [[ -z "$(git status --porcelain)" ]]; then
-            echo "nothing to commit";
-            exit 0;
-          fi
-
           app_user_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
-          git config --local user.name "${APP_SLUG}[bot]"
-          git config --local user.email "${app_user_id}+${APP_SLUG}[bot]@users.noreply.github.com"
-
-          git add .
-          git commit -m "automatic update" -m "from $GITHUB_REPOSITORY@$GITHUB_SHA"
-
-          git show
-        shell: bash
-
-      - name: Test example repo
-        run: |
-          cd example_repo
-          ../tests/scripts/run_ci "${CRATE_TYPE}"
+          echo "app-user-id=${app_user_id}" >> "${GITHUB_OUTPUT}"
         env:
-          JACTIONLINT_ONLINE: 1
-          GITHUB_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
         shell: bash
-
-      - name: Push example repo
-        run: |
-          cd example_repo
-          git push
-        shell: bash
-        if: ${{ github.ref == 'refs/heads/main' }}
+      - uses: $/.github/actions/sync-repo
+        with:
+          crate-type: ${{ matrix.crate_type }}
+          github-token: ${{ github.token }}
+          push-token: ${{ steps.app-token.outputs.token }}
+          git-user-name: "${{ steps.app-token.outputs.app-slug }}[bot]"
+          git-user-email: "${{ steps.get-app-user-id.outputs.app-user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com"
+          dry-run: "false"
 
   sync-repo-complete:
     name: sync-repo-complete
