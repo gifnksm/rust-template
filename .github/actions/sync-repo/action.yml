@@ -23,7 +23,7 @@ inputs:
 
 outputs:
   commit-url:
-    description: "URL of the pushed commit in the example repository"
+    description: "URL of the current commit in the synchronized example repository"
     value: ${{ steps.push.outputs.commit-url }}
 
 runs:
@@ -104,15 +104,18 @@ runs:
         JACTIONLINT_ONLINE: 1
         GITHUB_TOKEN: ${{ inputs.github-token }}
       shell: bash
-    - name: Push example repo
+    - name: Push example repo and set commit URL
       id: push
-      if: ${{ inputs.dry-run == 'false' && steps.commit-changes.outputs.updated == 'true' && github.ref == 'refs/heads/main' }}
+      if: ${{ inputs.dry-run == 'false' && github.ref == 'refs/heads/main' }}
       env:
         GH_TOKEN: ${{ inputs.push-token }}
         PROJECT_NAME: ${{ steps.project.outputs.name }}
+        UPDATED: ${{ steps.commit-changes.outputs.updated }}
       run: |
         cd example_repo
-        gh auth setup-git
-        git push
+        if [[ "${UPDATED}" == 'true' ]]; then
+          gh auth setup-git
+          git push
+        fi
         echo "commit-url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY_OWNER}/${PROJECT_NAME}/commit/$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
       shell: bash
