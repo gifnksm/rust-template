@@ -25,7 +25,7 @@ jobs:
   sync-repo:
     name: Sync Example Repo with Template
     environment:
-      name: example-repo
+      name: example-repo-${{ matrix.crate_type }}
       url: ${{ steps.sync.outputs.commit-url }}
     runs-on: ubuntu-26.04
     timeout-minutes: 5
