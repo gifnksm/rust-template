@@ -1,0 +1,110 @@
+name: Sync Example Repo with Template
+description: Update an example repository from the template, run CI checks, and optionally push changes
+
+inputs:
+  crate-type:
+    description: "Rust crate type to generate and test (bin or lib)"
+    required: true
+  github-token:
+    description: "GitHub token for tool downloads, example repository checkout, and API access during CI checks"
+    required: true
+  push-token:
+    description: "GitHub token with permission to push changes to the example repository"
+    required: false
+  git-user-name:
+    description: "Git author and committer name"
+    required: true
+  git-user-email:
+    description: "Git author and committer email address"
+    required: true
+  dry-run:
+    description: "Skip pushing changes to the example repository"
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Set project name
+      id: project
+      env:
+        CRATE_TYPE: ${{ inputs.crate-type }}
+      run: |
+        case "${CRATE_TYPE}" in
+          bin | lib) ;;
+          *)
+            echo "Unsupported crate type: ${CRATE_TYPE}" >&2
+            exit 1
+            ;;
+        esac
+        echo "name=rust-template-generated-${CRATE_TYPE}" >> "${GITHUB_OUTPUT}"
+      shell: bash
+    - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # v1
+      with:
+        toolchain: stable
+    - run: rustup toolchain install nightly --profile minimal
+      shell: bash
+    - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+      with:
+        github_token: ${{ inputs.github-token }}
+        persist_github_token: true
+    - run: MISE_LOCKED=false cargo generate --name "${PROJECT_NAME}" --path "template" --template-values-file tests/template_values.toml "--${CRATE_TYPE}" --allow-commands
+      env:
+        PROJECT_NAME: ${{ steps.project.outputs.name }}
+        CRATE_TYPE: ${{ inputs.crate-type }}
+      shell: bash
+    - name: Checkout example repo
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        repository: ${{ github.repository_owner }}/${{ steps.project.outputs.name }}
+        path: example_repo
+        token: ${{ inputs.github-token }}
+        persist-credentials: false
+    - name: Update example repo
+      run: |
+        ./tests/scripts/update_repo example_repo "${PROJECT_NAME}"
+        git -C example_repo add -N .
+      env:
+        PROJECT_NAME: ${{ steps.project.outputs.name }}
+      shell: bash
+    - name: Commit example repo changes
+      id: commit-changes
+      env:
+        GIT_USER_NAME: ${{ inputs.git-user-name }}
+        GIT_USER_EMAIL: ${{ inputs.git-user-email }}
+      run: |
+        cd example_repo
+        if [[ -z "$(git status --porcelain)" ]]; then
+          echo "nothing to commit";
+          echo "updated=false" >> "${GITHUB_OUTPUT}";
+          exit 0;
+        fi
+        git config --local user.name "${GIT_USER_NAME}"
+        git config --local user.email "${GIT_USER_EMAIL}"
+        git add .
+        git commit -m "automatic update" -m "from $GITHUB_REPOSITORY@$GITHUB_SHA"
+        echo "updated=true" >> "${GITHUB_OUTPUT}";
+      shell: bash
+    - name: Show example repo changes
+      if: ${{ steps.commit-changes.outputs.updated == 'true' }}
+      run: |
+        cd example_repo
+        git show
+      shell: bash
+    - name: Test example repo
+      run: |
+        cd example_repo
+        ../tests/scripts/run_ci "${CRATE_TYPE}"
+      env:
+        CRATE_TYPE: ${{ inputs.crate-type }}
+        JACTIONLINT_ONLINE: 1
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      shell: bash
+    - name: Push example repo
+      if: ${{ inputs.dry-run == 'false' && steps.commit-changes.outputs.updated == 'true' && github.ref == 'refs/heads/main' }}
+      env:
+        GH_TOKEN: ${{ inputs.push-token }}
+      run: |
+        cd example_repo
+        gh auth setup-git
+        git push
+      shell: bash
