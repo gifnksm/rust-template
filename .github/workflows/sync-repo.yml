@@ -24,6 +24,7 @@ env:
 
 jobs:
   sync-repo:
+    name: Sync Example Repo with Template
     runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
