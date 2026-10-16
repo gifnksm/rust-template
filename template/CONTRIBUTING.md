@@ -16,7 +16,20 @@ keywords.
 
 Try to do one pull request per change.
 
-Run `mise run ci` before opening or updating a pull request.
+For Rust code changes, run the following checks before opening or updating a
+pull request:
+
+```console
+cargo fmt --all --check
+cargo clippy --all-features --all-targets --workspace
+cargo test
+```
+
+For changes limited to documentation or other non-Rust files, check the files
+relevant to your changes; you do not need to run the Rust checks above.
+
+After opening or updating a pull request, review the CI results and fix any
+failures caused by your changes.
 
 When a pull request resolves an issue, reference it in the PR description with
 `Closes #<number>`. When it is related to an issue but does not resolve it,
@@ -56,7 +69,7 @@ If the required subsection does not exist yet under **Unreleased**, create it!
 
 If you want to contribute to the development of {{project-name}}, you can follow the steps below.
 
-### Set Up
+### Setup
 
 This is no different than other Rust projects.
 
@@ -68,7 +81,8 @@ cargo test
 
 ### Useful Commands
 
-* Run the full CI-equivalent suite, including docs and tests, before opening or updating a pull request:
+* Optionally, run the full CI-equivalent suite locally, including docs and tests,
+  using mise. Installing mise is not required to contribute:
 
   ```console
   mise run ci
@@ -84,4 +98,4 @@ cargo test
 
 {%- endif %}
 
-See `mise tasks ls` for more commands.
+If you use mise, see `mise tasks ls` for more commands.
