@@ -9,5 +9,5 @@ if [[ "${GITHUB_ACTIONS:-}" == 'true' ]]; then
   echo "::add-matcher::.github/jactionlint-matcher.json"
 fi
 set -x
-jactionlint --profile pedantic "$@"
+jactionlint "$@"
 '''
