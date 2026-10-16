@@ -1,3 +1,6 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/jdx/jactionlint/main/schema/jactionlint-config.json
+profile: pedantic
+
 ignores:
   - rule: superfluous-actions
     uses: dtolnay/rust-toolchain
