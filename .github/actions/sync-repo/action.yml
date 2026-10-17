@@ -24,7 +24,7 @@ inputs:
 outputs:
   commit-url:
     description: "URL of the pushed commit in the example repository"
-    value: ${{ steps.push.outputs.commit-url }}
+    value: ${{ steps.create-commit-url.outputs.commit-url }}
 
 runs:
   using: composite
@@ -104,15 +104,29 @@ runs:
         JACTIONLINT_ONLINE: 1
         GITHUB_TOKEN: ${{ inputs.github-token }}
       shell: bash
-    - name: Push example repo
+    - name: Reset local commit
+      if: ${{ steps.commit-changes.outputs.updated == 'true' }}
+      run: git -C example_repo reset --mixed HEAD^
+      shell: bash
+    - name: Push verified commit
       id: push
       if: ${{ inputs.dry-run == 'false' && steps.commit-changes.outputs.updated == 'true' && github.ref == 'refs/heads/main' }}
+      uses: suzuki-shunsuke/commit-action@5eaa5ecce3ffe93d09a85b946dc5136e3713b1b7 # v1.1.0
+      with:
+        github_token: ${{ inputs.push-token }}
+        repository: ${{ github.repository_owner }}/${{ steps.project.outputs.name }}
+        branch: main
+        root_dir: example_repo
+        commit_message: |-
+          automatic update
+
+          from ${{ github.repository }}@${{ github.sha }}
+    - name: Create commit URL output
+      id: create-commit-url
+      if: ${{ inputs.dry-run == 'false' && steps.commit-changes.outputs.updated == 'true' && github.ref == 'refs/heads/main' }}
       env:
-        GH_TOKEN: ${{ inputs.push-token }}
+        COMMIT_SHA: ${{ steps.push.outputs.sha }}
         PROJECT_NAME: ${{ steps.project.outputs.name }}
       run: |
-        cd example_repo
-        gh auth setup-git
-        git push
-        echo "commit-url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY_OWNER}/${PROJECT_NAME}/commit/$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
+        echo "commit-url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY_OWNER}/${PROJECT_NAME}/commit/${COMMIT_SHA}" >> "${GITHUB_OUTPUT}"
       shell: bash
