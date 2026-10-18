@@ -9,6 +9,7 @@ lockfile_platforms = [
   "windows-x64",
   "windows-arm64",
 ]
+minimum_release_age = "3d"
 
 [tools]
 editorconfig-checker = { version = "4.0.2", lazy = true, lazy_bins = ["editorconfig-checker"] }
