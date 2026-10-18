@@ -27,6 +27,9 @@ jobs:
     environment:
       name: example-repo-${{ matrix.crate_type }}
       url: ${{ steps.sync.outputs.commit-url }}
+    # Poisoned cached tools could steal the GitHub App token or tamper with
+    # commits pushed to the example repositories.
+    cache-mode: none
     runs-on: ubuntu-26.04
     timeout-minutes: 5
     strategy:
