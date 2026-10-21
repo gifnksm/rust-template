@@ -127,6 +127,7 @@ check_rulesets() {
             end
         ' <<<"${existing_rulesets}")" || {
             status=1
+            error "failed to get ruleset id for ruleset '${ruleset_name}'"
             continue
         }
 
@@ -266,7 +267,10 @@ check_values() {
     local actual_data="$4"
 
     local queries_txt
-    queries_txt="$(jq -r '.[].query' <<<"${checks}")" || return 1
+    queries_txt="$(jq -r '.[].query' <<<"${checks}")" || {
+        error "failed to extract queries from checks"
+        return 1
+    }
     local -a queries
     readarray -t queries <<<"${queries_txt}"
 
