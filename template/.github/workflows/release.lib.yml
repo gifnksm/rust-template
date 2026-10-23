@@ -9,6 +9,11 @@ concurrency:
   group: release-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
+# Metadata checks and jobs that build or publish release artifacts must not
+# restore caches: poisoned tools or dependencies could alter releases or steal
+# publishing credentials.
+cache-mode: none
+
 permissions:
   contents: read
 
@@ -18,16 +23,12 @@ env:
   MISE_CARGO_BINSTALL_ONLY: true
   MISE_LOCKED: true
 
-# Metadata checks and jobs that build or publish release artifacts must not
-# restore caches: poisoned tools or dependencies could alter releases or steal
-# publishing credentials.
 jobs:
   check-metadata:
     name: Check Cargo metadata
     outputs:
       package_name: ${{ steps.check-metadata.outputs.name }}
       package_version: ${{ steps.check-metadata.outputs.version }}
-    cache-mode: none
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     steps:
@@ -56,11 +57,9 @@ jobs:
     permissions:
       contents: read
       id-token: write # Required for codecov-action to upload coverage reports
-    cache-mode: none
 
   audit:
     uses: $/.github/workflows/reusable-audit.yml
-    cache-mode: none
 
   prepare-release:
     name: Prepare GitHub Release
@@ -70,7 +69,6 @@ jobs:
       - audit
     permissions:
       contents: write # Allow creating a draft GitHub Release
-    cache-mode: none
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     steps:
@@ -96,7 +94,6 @@ jobs:
     permissions:
       contents: read
       id-token: write # Allow generating OIDC tokens for authenticating with crates.io
-    cache-mode: none
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     steps:
@@ -116,7 +113,6 @@ jobs:
       - publish-crate
     permissions:
       contents: write # Allow publishing the GitHub Release
-    cache-mode: none
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     steps:
