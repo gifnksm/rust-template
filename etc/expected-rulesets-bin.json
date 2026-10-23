@@ -34,7 +34,6 @@
       {
         "query": "[ .rules[] | select(.type == \"required_status_checks\") | .parameters.required_status_checks[]] | sort_by(.context)",
         "value": [
-          { "context": "audit-complete", "integration_id": 15368 },
           { "context": "build-dist-complete", "integration_id": 15368 },
           { "context": "ci-complete", "integration_id": 15368 }
         ]
