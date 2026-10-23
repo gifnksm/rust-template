@@ -1,13 +1,10 @@
 ["format:markdown"]
 description = "Format Markdown files"
-usage = '''
-flag "--check" help="Run rumdl in check mode"
-'''
-run = '''
-rumdl format
-  {{- ' --check' if usage.check else '' }}
-'''
+run = "rumdl fmt"
 
 ["lint:markdown"]
 description = "Lint Markdown files"
-run = "rumdl check"
+run = [
+  "rumdl fmt --check",
+  "rumdl check",
+]

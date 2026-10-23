@@ -97,7 +97,7 @@ jobs:
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
-      - run: mise run ci:lint-workflow
+      - run: mise run lint:workflow
         env:
           JACTIONLINT_ONLINE: 1
           GITHUB_TOKEN: ${{ github.token }}
@@ -115,7 +115,7 @@ jobs:
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
-      - run: mise run ci:lint-spelling
+      - run: mise run lint:spelling
         shell: bash
 
   lint-markdown:
@@ -130,7 +130,7 @@ jobs:
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
-      - run: mise run ci:lint-markdown
+      - run: mise run lint:markdown
         shell: bash
 
   lint-editorconfig:
@@ -145,7 +145,7 @@ jobs:
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
-      - run: mise run ci:lint-editorconfig
+      - run: mise run lint:editorconfig
         shell: bash
 
   lint-shell:
@@ -160,7 +160,7 @@ jobs:
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
-      - run: mise run ci:lint-shell
+      - run: mise run lint:shell
         shell: bash
 
   lint-renovate:
@@ -175,7 +175,7 @@ jobs:
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
-      - run: mise run ci:lint-renovate
+      - run: mise run lint:renovate
         shell: bash
 
   ci-complete:

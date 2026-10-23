@@ -42,7 +42,7 @@ jobs:
           github_token: ${{ github.token }}
           persist_github_token: true
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: mise run ci:test-rust
+      - run: mise run test:rust
         shell: bash
 
   coverage:
@@ -69,7 +69,7 @@ jobs:
           github_token: ${{ github.token }}
           persist_github_token: true
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - run: mise run ci:coverage-rust
+      - run: mise run coverage:rust --codecov --output-path=target/codecov.json
         shell: bash
       - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
