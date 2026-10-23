@@ -33,10 +33,7 @@
       },
       {
         "query": "[ .rules[] | select(.type == \"required_status_checks\") | .parameters.required_status_checks[]] | sort_by(.context)",
-        "value": [
-          { "context": "audit-complete", "integration_id": 15368 },
-          { "context": "ci-complete", "integration_id": 15368 }
-        ]
+        "value": [{ "context": "ci-complete", "integration_id": 15368 }]
       },
       {
         "query": ".bypass_actors",
