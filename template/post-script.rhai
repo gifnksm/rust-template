@@ -27,5 +27,6 @@ for file in file_map {
     }
 }
 
+system::command("cargo", ["generate-lockfile"]);
 system::command("mise", ["run", "format:markdown"]);
 system::command("mise", ["run", "sync:markdown", "--allow-no-vcs"]);
