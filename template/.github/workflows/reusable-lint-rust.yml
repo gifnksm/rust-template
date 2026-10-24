@@ -1,4 +1,4 @@
-name: Lint Rust (Reusable)
+name: "[Reusable] Lint (rust)"
 
 on:
   workflow_call:

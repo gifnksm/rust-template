@@ -85,13 +85,9 @@ jobs:
 
   lint-rust:
     name: Lint (rust)
-    strategy:
-      fail-fast: true
-      matrix:
-        rust: [stable]
     uses: $/.github/workflows/reusable-lint-rust.yml
     with:
-      rust-toolchain: ${{ matrix.rust }}
+      rust-toolchain: stable
 
   lint-misc:
     name: Lint (misc)
@@ -113,7 +109,7 @@ jobs:
       rust-toolchain: ${{ matrix.rust }}
 
   audit:
-    name: Security Audit
+    name: Audit
     uses: $/.github/workflows/reusable-audit.yml
     with:
       rust-toolchain: stable

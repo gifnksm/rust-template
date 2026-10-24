@@ -1,4 +1,4 @@
-name: Test Rust (Reusable)
+name: "[Reusable] Test (rust)"
 
 on:
   workflow_call:
