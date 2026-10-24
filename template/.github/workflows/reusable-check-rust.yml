@@ -1,4 +1,4 @@
-name: Check Rust (Reusable)
+name: "[Reusable] Check (rust)"
 
 on:
   workflow_call:

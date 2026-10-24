@@ -1,4 +1,4 @@
-name: Coverage Rust (Reusable)
+name: "[Reusable] Coverage (rust)"
 
 on:
   workflow_call:

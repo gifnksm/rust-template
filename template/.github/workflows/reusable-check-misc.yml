@@ -1,4 +1,4 @@
-name: Check Misc (Reusable)
+name: "[Reusable] Check (misc)"
 
 on:
   workflow_call:

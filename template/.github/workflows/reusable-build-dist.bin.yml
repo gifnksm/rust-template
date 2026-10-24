@@ -1,4 +1,4 @@
-name: Build Dist (Reusable)
+name: "[Reusable] Build (dist)"
 
 on:
   workflow_call:
