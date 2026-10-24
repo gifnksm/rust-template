@@ -23,20 +23,14 @@ check_command_exists() {
 }
 
 main() {
-    [[ "$#" -eq 4 ]] || [ "$#" -eq 3 ] || {
-        echo "Usage: $0 <owner> <repo> <crate_type> [<target>]" >&2
+    [[ "$#" -eq 3 ]] || [ "$#" -eq 2 ] || {
+        echo "Usage: $0 <owner> <repo> [<target>]" >&2
         return 1
     }
 
     local owner="$1"
     local repo="$2"
-    local crate_type="$3"
-    local target="${4:-all}"
-
-    [[ "${crate_type}" == "bin" ]] || [[ "${crate_type}" == "lib" ]] || {
-        error "invalid crate type '${crate_type}'. Must be 'bin' or 'lib'."
-        return 1
-    }
+    local target="${3:-all}"
 
     check_command_exists "gh" || return 1
     check_command_exists "jq" || return 1
@@ -54,7 +48,7 @@ main() {
     local status=0
     case "${target}" in
     "rulesets")
-        check_rulesets "${owner}" "${repo}" "${crate_type}" || status=1
+        check_rulesets "${owner}" "${repo}" || status=1
         ;;
     "immutable-releases")
         check_immutable_releases "${owner}" "${repo}" || status=1
@@ -63,7 +57,7 @@ main() {
         check_environments "${owner}" "${repo}" || status=1
         ;;
     "all")
-        check_rulesets "${owner}" "${repo}" "${crate_type}" || status=1
+        check_rulesets "${owner}" "${repo}" || status=1
         check_immutable_releases "${owner}" "${repo}" || status=1
         check_environments "${owner}" "${repo}" || status=1
         ;;
@@ -78,9 +72,8 @@ main() {
 check_rulesets() {
     local owner="$1"
     local repo="$2"
-    local crate_type="$3"
 
-    local checklist_file="${DATASET_DIR}/expected-rulesets-${crate_type}.json"
+    local checklist_file="${DATASET_DIR}/expected-rulesets.json"
     [[ -f "${checklist_file}" ]] || {
         error "checklist file not found: ${checklist_file}"
         return 1

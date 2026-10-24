@@ -1,2 +1,3 @@
 [ci]
+description = "Run all CI lint checks"
 depends = ["lint:*"]

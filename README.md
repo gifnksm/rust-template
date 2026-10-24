@@ -21,7 +21,7 @@ This template provides the following features:
 ### GitHub Integration
 
 * [security checks]
-* [continuous integration]
+* continuous integration ([bin crate][ci-bin] and [lib crate][ci-lib])
   * cargo test (stable toolchain and MSRV toolchain)
   * cargo build (stable toolchain and MSRV toolchain)
   * rustfmt
@@ -30,16 +30,18 @@ This template provides the following features:
   * docs-rs
   * publish-dry-run
   * code coverage ([codecov.io])
-* [release]
+* release ([bin crate][release-bin] and [lib crate][release-lib])
   * create GitHub release
   * upload prebuilt binaries for Linux, macOS, and Windows (bin crate only)
 * [issue template]
 * [pull request template]
 
 [security checks]: ./template/.github/workflows/audit.yml
-[continuous integration]: ./template/.github/workflows/ci.yml
+[ci-bin]: ./template/.github/workflows/ci.bin.yml
+[ci-lib]: ./template/.github/workflows/ci.lib.yml
 [codecov.io]: https://about.codecov.io/
-[release]: ./template/.github/workflows/release.bin.yml
+[release-bin]: ./template/.github/workflows/release.bin.yml
+[release-lib]: ./template/.github/workflows/release.lib.yml
 [issue template]: ./template/.github/ISSUE_TEMPLATE/
 [pull request template]: ./template/.github/PULL_REQUEST_TEMPLATE.md
 

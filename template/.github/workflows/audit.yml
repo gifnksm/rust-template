@@ -21,5 +21,7 @@ env:
 
 jobs:
   audit:
-    name: Audit
+    name: Security Audit
     uses: $/.github/workflows/reusable-audit.yml
+    with:
+      rust-toolchain: stable
