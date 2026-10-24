@@ -26,14 +26,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [stable]
-        job:
-          - crate_type: "bin"
-          - crate_type: "lib"
+        crate_type: ["bin", "lib"]
     timeout-minutes: 5
     env:
-      PROJECT_NAME: rust-template-generated-${{ matrix.job.crate_type }}
-      CRATE_TYPE: ${{ matrix.job.crate_type }}
+      PROJECT_NAME: rust-template-generated-${{ matrix.crate_type }}
+      CRATE_TYPE: ${{ matrix.crate_type }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
