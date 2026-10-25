@@ -38,42 +38,47 @@ url_api = "https://api.github.com/repos/editorconfig-checker/editorconfig-checke
 provenance = "github-attestations"
 
 [[tools."github:cargo-generate/cargo-generate"]]
-version = "0.25.0"
+version = "0.25.1"
 backend = "github:cargo-generate/cargo-generate"
-specifiers = ["0.25.0"]
+specifiers = ["v0.25.1"]
 
 [tools."github:cargo-generate/cargo-generate"."platforms.linux-arm64"]
-checksum = "sha256:0a969ce6cdf14b10cfa64d77ed7654bcf66e78f70f31ba9ae60314ed69f7e258"
-url = "https://github.com/cargo-generate/cargo-generate/releases/download/v0.25.0/cargo-generate-v0.25.0-aarch64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/cargo-generate/cargo-generate/releases/assets/572138784"
+checksum = "sha256:574a4e20863b331b01f4b79e284dcd57bbceaf24c13e581708d9741988c77347"
+checksum_source = "mise-versions"
+url = "https://github.com/cargo-generate/cargo-generate/releases/download/v0.25.1/cargo-generate-v0.25.1-aarch64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/cargo-generate/cargo-generate/releases/assets/664051723"
 
 [tools."github:cargo-generate/cargo-generate"."platforms.linux-x64"]
-checksum = "sha256:2e71538c10410827579987c546db7030f71c0283774891bd8ebf107962260e80"
-url = "https://github.com/cargo-generate/cargo-generate/releases/download/v0.25.0/cargo-generate-v0.25.0-x86_64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/cargo-generate/cargo-generate/releases/assets/572139140"
+checksum = "sha256:615a12f58c86bd8275c41289eb01718283894193ee59e99ebbf550d997f16fd8"
+checksum_source = "mise-versions"
+url = "https://github.com/cargo-generate/cargo-generate/releases/download/v0.25.1/cargo-generate-v0.25.1-x86_64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/cargo-generate/cargo-generate/releases/assets/664045592"
 
 [tools."github:cargo-generate/cargo-generate"."platforms.macos-arm64"]
-checksum = "sha256:ba11f85d917e006d5e55aac984f1300a1375fcda0b14a15e6be4730a7228134d"
-url = "https://github.com/cargo-generate/cargo-generate/releases/download/v0.25.0/cargo-generate-v0.25.0-aarch64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/cargo-generate/cargo-generate/releases/assets/572134861"
+checksum = "sha256:632c3cced445a203cbb881e034be5cf4caf1ea32f75271635e498a434d02429b"
+checksum_source = "mise-versions"
+url = "https://github.com/cargo-generate/cargo-generate/releases/download/v0.25.1/cargo-generate-v0.25.1-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/cargo-generate/cargo-generate/releases/assets/664044240"
 
 [tools."github:cargo-generate/cargo-generate"."platforms.windows-x64"]
-checksum = "sha256:7356d6513430e96960fbe38d738f8fe94963f52ed7a52f3e31b81a3973603b73"
-url = "https://github.com/cargo-generate/cargo-generate/releases/download/v0.25.0/cargo-generate-v0.25.0-x86_64-pc-windows-msvc.tar.gz"
-url_api = "https://api.github.com/repos/cargo-generate/cargo-generate/releases/assets/572137825"
+checksum = "sha256:99f8511d222766c9396814e784bb8a2dba387a744eec9ed9d157b3e819370f5d"
+checksum_source = "mise-versions"
+url = "https://github.com/cargo-generate/cargo-generate/releases/download/v0.25.1/cargo-generate-v0.25.1-x86_64-pc-windows-msvc.tar.gz"
+url_api = "https://api.github.com/repos/cargo-generate/cargo-generate/releases/assets/664044361"
 
 [[tools."github:cargo-generate/cargo-generate"]]
-version = "0.25.0"
+version = "0.25.1"
 backend = "github:cargo-generate/cargo-generate"
-specifiers = ["0.25.0"]
+specifiers = ["v0.25.1"]
 
 [tools."github:cargo-generate/cargo-generate".options]
 asset_pattern = "cargo-generate-v{{ version }}-x86_64-pc-windows-msvc.tar.gz"
 
 [tools."github:cargo-generate/cargo-generate"."platforms.windows-arm64"]
-checksum = "sha256:7356d6513430e96960fbe38d738f8fe94963f52ed7a52f3e31b81a3973603b73"
-url = "https://github.com/cargo-generate/cargo-generate/releases/download/v0.25.0/cargo-generate-v0.25.0-x86_64-pc-windows-msvc.tar.gz"
-url_api = "https://api.github.com/repos/cargo-generate/cargo-generate/releases/assets/572137825"
+checksum = "sha256:99f8511d222766c9396814e784bb8a2dba387a744eec9ed9d157b3e819370f5d"
+checksum_source = "mise-versions"
+url = "https://github.com/cargo-generate/cargo-generate/releases/download/v0.25.1/cargo-generate-v0.25.1-x86_64-pc-windows-msvc.tar.gz"
+url_api = "https://api.github.com/repos/cargo-generate/cargo-generate/releases/assets/664044361"
 
 [[tools.jactionlint]]
 version = "2.3.0"
