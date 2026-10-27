@@ -36,7 +36,7 @@ main() {
     locked)
         [[ -f "${pkgdir}/Cargo.lock" ]] || {
             echo "no lockfile found in package" >&2
-            exit 1
+            return 1
         }
         osv-scanner scan source --lockfile="${pkgdir}/Cargo.lock"
         ;;
