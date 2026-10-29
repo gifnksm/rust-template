@@ -285,7 +285,7 @@ check_values() {
         }
 
         local jd_output
-        jd_output="$(jd <(echo "${actual_value}") <(echo "${expected_value}"))" || {
+        jd_output="$(jd -color-words <(echo "${actual_value}") <(echo "${expected_value}"))" || {
             error "'${query}'" >&2
             echo "expected: ${expected_value}" >&2
             echo "actual:   ${actual_value}" >&2
