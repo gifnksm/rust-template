@@ -17,5 +17,6 @@ perl -i -pe 's@(?<=^version = ").*(?="$)@'"${repo_pkg_version}"'@' "${repo_path}
 (
     cd "${repo_path}"
     cargo generate-lockfile
+    gh actions-lock
     MISE_TRUSTED_CONFIG_PATHS="$PWD" mise lock
 )
