@@ -19,6 +19,7 @@ for crate_type in bin lib; do
             --template-values-file ../template_values.toml \
             --allow-commands
         cargo generate-lockfile
+        gh actions-lock
         MISE_TRUSTED_CONFIG_PATHS="$PWD" mise lock
         git add .
         git commit -m "Initial commit"

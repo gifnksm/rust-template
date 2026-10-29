@@ -43,22 +43,27 @@ runs:
         esac
         echo "name=rust-template-generated-${CRATE_TYPE}" >> "${GITHUB_OUTPUT}"
       shell: bash
-    - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+    - uses: dtolnay/rust-toolchain@v1
       with:
         toolchain: stable
     - run: rustup toolchain install nightly --profile minimal
       shell: bash
-    - uses: jdx/mise-action@82a612c5ab8bcda7cc5db6b7e81a8e7584c3dc6e # v5.2.3
+    - run: gh extension install github/gh-actions-lock
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+      shell: bash
+    - uses: jdx/mise-action@v5.2.3
       with:
         github_token: ${{ inputs.github-token }}
         persist_github_token: true
     - run: MISE_LOCKED=false cargo generate --name "${PROJECT_NAME}" --path "template" --template-values-file tests/template_values.toml "--${CRATE_TYPE}" --allow-commands
       env:
+        GH_TOKEN: ${{ inputs.github-token }}
         PROJECT_NAME: ${{ steps.project.outputs.name }}
         CRATE_TYPE: ${{ inputs.crate-type }}
       shell: bash
     - name: Checkout example repo
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      uses: actions/checkout@v7.0.1
       with:
         repository: ${{ github.repository_owner }}/${{ steps.project.outputs.name }}
         path: example_repo
@@ -69,6 +74,7 @@ runs:
         ./tests/scripts/update_repo example_repo "${PROJECT_NAME}"
         git -C example_repo add -N .
       env:
+        GH_TOKEN: ${{ inputs.github-token }}
         PROJECT_NAME: ${{ steps.project.outputs.name }}
       shell: bash
     - name: Commit example repo changes
@@ -111,7 +117,7 @@ runs:
     - name: Push verified commit
       id: push
       if: ${{ inputs.dry-run == 'false' && steps.commit-changes.outputs.updated == 'true' && github.ref == 'refs/heads/main' }}
-      uses: suzuki-shunsuke/commit-action@5eaa5ecce3ffe93d09a85b946dc5136e3713b1b7 # v1.1.0
+      uses: suzuki-shunsuke/commit-action@v1.1.0
       with:
         github_token: ${{ inputs.push-token }}
         repository: ${{ github.repository_owner }}/${{ steps.project.outputs.name }}
