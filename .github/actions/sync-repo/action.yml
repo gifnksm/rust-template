@@ -52,7 +52,7 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
       shell: bash
-    - uses: jdx/mise-action@v5.2.3
+    - uses: jdx/mise-action@v5.2.4
       with:
         github_token: ${{ inputs.github-token }}
         persist_github_token: true
