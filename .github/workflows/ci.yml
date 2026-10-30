@@ -44,7 +44,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
-      - uses: jdx/mise-action@v5.2.3
+      - uses: jdx/mise-action@v5.2.4
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
@@ -97,7 +97,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: jdx/mise-action@v5.2.3
+      - uses: jdx/mise-action@v5.2.4
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
@@ -115,7 +115,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: jdx/mise-action@v5.2.3
+      - uses: jdx/mise-action@v5.2.4
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
@@ -130,7 +130,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: jdx/mise-action@v5.2.3
+      - uses: jdx/mise-action@v5.2.4
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
@@ -145,7 +145,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: jdx/mise-action@v5.2.3
+      - uses: jdx/mise-action@v5.2.4
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
@@ -160,7 +160,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: jdx/mise-action@v5.2.3
+      - uses: jdx/mise-action@v5.2.4
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
@@ -175,7 +175,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: jdx/mise-action@v5.2.3
+      - uses: jdx/mise-action@v5.2.4
         with:
           github_token: ${{ github.token }}
           persist_github_token: true
