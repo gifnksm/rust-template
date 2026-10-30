@@ -49,7 +49,8 @@ See the release workflows for [binary crates][release-bin] and
   uploaded to [Codecov].
 
 See the CI workflows for [binary crates][ci-bin] and [library crates][ci-lib],
-and the [scheduled audit workflow][audit-workflow].
+and the scheduled audit workflows for [binary crates][audit-bin] and
+[library crates][audit-lib].
 
 ### Development and Maintenance
 
@@ -276,5 +277,6 @@ This repository borrows many components from [rust-github/template].
 [dist-workflow]: ./template/.github/workflows/reusable-build-dist.bin.yml
 [ci-bin]: ./template/.github/workflows/ci.bin.yml
 [ci-lib]: ./template/.github/workflows/ci.lib.yml
-[audit-workflow]: ./template/.github/workflows/audit.yml
+[audit-bin]: ./template/.github/workflows/audit.bin.yml
+[audit-lib]: ./template/.github/workflows/audit.lib.yml
 [rust-github/template]: https://github.com/rust-github/template
