@@ -6,13 +6,13 @@ workflows:
     '.github/workflows/ci.yml':
         - 'actions/checkout@v7.0.1'
         - 'dtolnay/rust-toolchain@v1'
-        - 'jdx/mise-action@v5.2.5'
+        - 'jdx/mise-action@v5.2.6'
         - 'suzuki-shunsuke/commit-action@v1.1.0'
     '.github/workflows/sync-repo.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/create-github-app-token@v3.3.0'
         - 'dtolnay/rust-toolchain@v1'
-        - 'jdx/mise-action@v5.2.5'
+        - 'jdx/mise-action@v5.2.6'
         - 'suzuki-shunsuke/commit-action@v1.1.0'
 dependencies:
     'actions/checkout@v7.0.1':
@@ -30,9 +30,9 @@ dependencies:
         commit: 'sha1-683b588c487a69d01f6c6ddf40f036ff682cc2c8'
         owner_id: 1940490
         repo_id: 260749683
-    'jdx/mise-action@v5.2.5':
-        ref: 'v5.2.5'
-        commit: 'sha1-6612f0ef07ed2a736cd1e00a94a065522dd41195'
+    'jdx/mise-action@v5.2.6':
+        ref: 'v5.2.6'
+        commit: 'sha1-f5be966e4a917d54244728e6a5fdcd1d93a35e6c'
         owner_id: 216188
         repo_id: 738284564
     'suzuki-shunsuke/commit-action@v1.1.0':
