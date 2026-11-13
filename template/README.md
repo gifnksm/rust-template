@@ -57,7 +57,7 @@ cargo install --git https://github.com/{{gh-username}}/{{project-name}}.git {{ p
 
 ## Minimum Supported Rust Version (MSRV)
 
-The minimum supported Rust version is **Rust {{rust-version}}**.
+The minimum supported Rust version is **Rust 1.94.0**.
 
 While a crate is a pre-release status (0.x.x) it may have its MSRV bumped in a
 patch release. Once a crate has reached 1.x, any MSRV bump will be accompanied
