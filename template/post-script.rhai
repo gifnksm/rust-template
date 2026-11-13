@@ -1,4 +1,5 @@
 let file_map = [
+    #{ target: ".cargo/config.toml", bin: ".cargo/config.bin.toml", lib: ".cargo/config.lib.toml" },
     #{ target: ".github/workflows/audit.yml", bin: ".github/workflows/audit.bin.yml", lib: ".github/workflows/audit.lib.yml" },
     #{ target: ".github/workflows/ci.yml", bin: ".github/workflows/ci.bin.yml", lib: ".github/workflows/ci.lib.yml" },
     #{ target: ".github/workflows/reusable-build-dist.yml", bin: ".github/workflows/reusable-build-dist.bin.yml", lib: () },
