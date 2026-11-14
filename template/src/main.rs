@@ -8,7 +8,7 @@ struct App {}
 
 fn main() {
     let bin_name = env!("CARGO_BIN_NAME");
-    let env_prefix = bin_name.to_uppercase().replace("-", "_");
+    let env_prefix = bin_name.to_uppercase().replace('-', "_");
     if let Ok(shell) = env::var(format!("{env_prefix}_COMPLETE")) {
         print_completion(bin_name, &shell);
         process::exit(0);
