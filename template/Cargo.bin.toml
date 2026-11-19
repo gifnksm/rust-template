@@ -13,10 +13,8 @@ categories = []
 style = "flat-square"
 badges = {
   maintenance = true,
-  license = { link = "#license" },
   crates-io = true,
-  rust-version = true,
-  github-actions = { workflows = "ci.yml" },
+  github-actions = { workflows = ["ci.yml", "audit.yml"] },
   codecov = true,
 }
 
