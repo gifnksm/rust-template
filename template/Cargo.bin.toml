@@ -46,7 +46,7 @@ maintenance = { status = "{{ maintenance-status }}" }
 clap = { version = "4.6.8", features = ["derive"] }
 clap_complete = "4.6.12"
 clap_complete_nushell = "4.6.3"
-clap_mangen = "0.3.3"
+clap_mangen = "0.3.4"
 
 [lints.cargo]
 pedantic = { level = "warn", priority = -1 }
