@@ -43,7 +43,7 @@ pkg-fmt = "zip"
 maintenance = { status = "{{ maintenance-status }}" }
 
 [dependencies]
-clap = { version = "4.6.8", features = ["derive"] }
+clap = { version = "4.6.9", features = ["derive"] }
 clap_complete = "4.6.12"
 clap_complete_nushell = "4.6.3"
 clap_mangen = "0.3.4"
